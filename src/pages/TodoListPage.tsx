@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { filteredTasksApi } from "../api/api";
-import { Task, FilteredTasksResponse, TaskInfo, Filter } from "../api/api.types.ts";
+import {
+  Task,
+  FilteredTasksResponse,
+  TaskInfo,
+  Filter,
+} from "../api/api.types.ts";
 
 import "../Styles/App.css";
 import TodoForm from "../components/TodoForm/TodoForm";
 import TodoTasks from "../components/TodoTasks/TodoTasks";
 import TodoListOfTasks from "../components/TodoListOfTasks/TodoListOfTasks";
-
-
 
 export function TodoListPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -30,11 +33,9 @@ export function TodoListPage() {
     }
   };
 
-  const updateTasks =  (): Promise<void> => fetchFilteredTasksApi(filter);
+  const updateTasks = (): Promise<void> => fetchFilteredTasksApi(filter);
 
-  const handleChangeFilteredTasks = (
-    filter: Filter,
-  ) => {
+  const handleChangeFilteredTasks = (filter: Filter) => {
     setFilter(filter);
   };
 

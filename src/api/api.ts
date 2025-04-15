@@ -2,8 +2,6 @@ import { Task, FilteredTasksResponse, Filter } from "./api.types.ts";
 
 const TODO_API = "https://easydev.club/api/v1/todos";
 
-
-
 export const deleteTaskApi = async (id: number): Promise<null> => {
   try {
     const response = await fetch(`${TODO_API}/${id}`, {
@@ -26,7 +24,6 @@ export const deleteTaskApi = async (id: number): Promise<null> => {
   }
 };
 
-
 export const filteredTasksApi = async (
   filter: Filter,
 ): Promise<FilteredTasksResponse | null> => {
@@ -45,7 +42,6 @@ export const filteredTasksApi = async (
     return null;
   }
 };
-
 
 export const addTaskApi = async (title: string): Promise<Task | null> => {
   try {
@@ -68,7 +64,6 @@ export const addTaskApi = async (title: string): Promise<Task | null> => {
   }
 };
 
-
 export const updateTaskStatusApi = async (id: number): Promise<Task | null> => {
   try {
     const getResponse = await fetch(`${TODO_API}/${id}`);
@@ -77,7 +72,7 @@ export const updateTaskStatusApi = async (id: number): Promise<Task | null> => {
     }
 
     const task: Task = await getResponse.json();
-    const isDone: Task['isDone'] = task.isDone;
+    const isDone: Task["isDone"] = task.isDone;
 
     const putResponse = await fetch(`${TODO_API}/${id}`, {
       method: "PUT",
@@ -97,7 +92,6 @@ export const updateTaskStatusApi = async (id: number): Promise<Task | null> => {
     return null;
   }
 };
-
 
 export const updateTaskTitleApi = async (
   id: number,

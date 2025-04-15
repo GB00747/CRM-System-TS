@@ -1,7 +1,6 @@
 import styles from "./TodoListOfTasks.module.css";
 
-import {TaskInfo, Filter} from "../../api/api.types.ts";
-
+import { TaskInfo, Filter } from "../../api/api.types.ts";
 
 interface Props {
   handleChangeFilteredTasks: (filter: Filter) => void;

@@ -14,8 +14,7 @@ import {
   updateTaskTitleApi,
 } from "../../api/api";
 
-import {Task as TaskType} from '../../api/api.types.ts'
-
+import { Task as TaskType } from "../../api/api.types.ts";
 
 interface Props {
   task: TaskType;
@@ -23,7 +22,9 @@ interface Props {
 }
 
 export default function Task({ task, updateTasks }: Props) {
-  const [changingTaskValue, setChangingTaskValue] = useState<string>(task.title);
+  const [changingTaskValue, setChangingTaskValue] = useState<string>(
+    task.title,
+  );
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const handleDeleteTask = async (id: number) => {
@@ -50,9 +51,9 @@ export default function Task({ task, updateTasks }: Props) {
   };
 
   const handleChangeValueInInput = async (
-      event: React.FormEvent<HTMLFormElement>,
-      id: number,
-      title: string
+    event: React.FormEvent<HTMLFormElement>,
+    id: number,
+    title: string,
   ) => {
     event.preventDefault();
 
@@ -66,8 +67,8 @@ export default function Task({ task, updateTasks }: Props) {
       const updateTaskValue = await updateTaskTitleApi(id, title);
 
       if (!updateTaskValue) {
-        alert('Не удалось обновить задачу');
-        return
+        alert("Не удалось обновить задачу");
+        return;
       }
       await updateTasks();
       setChangingTaskValue(updateTaskValue.title);
@@ -76,62 +77,63 @@ export default function Task({ task, updateTasks }: Props) {
       console.error("Ошибка при обновлении задачи:", error);
       alert("Произошла ошибка при обновлении задачи");
     }
-
   };
 
   const initialTask = (
-      <li className={styles.task}>
-        <input
-            type="checkbox"
-            checked={task.isDone}
-            onChange={() => handleSwitchIsDone(task.id)}
-            className={styles.checkbox}
-        />
-        <div className={styles.title}>{task.title}</div>
-        <button
-            type="button"
-            onClick={handleStartEdit}
-            className={styles.button}
-            title="Редактировать"
-        >
-          <MdEditSquare className={styles.icon} />
-        </button>
-        <button
-            type="button"
-            onClick={() => handleDeleteTask(task.id)}
-            className={`${styles.button} ${styles.deleteButton}`}
-            title="Удалить"
-        >
-          <AiFillDelete className={styles.icon} />
-        </button>
-      </li>
+    <li className={styles.task}>
+      <input
+        type="checkbox"
+        checked={task.isDone}
+        onChange={() => handleSwitchIsDone(task.id)}
+        className={styles.checkbox}
+      />
+      <div className={styles.title}>{task.title}</div>
+      <button
+        type="button"
+        onClick={handleStartEdit}
+        className={styles.button}
+        title="Редактировать"
+      >
+        <MdEditSquare className={styles.icon} />
+      </button>
+      <button
+        type="button"
+        onClick={() => handleDeleteTask(task.id)}
+        className={`${styles.button} ${styles.deleteButton}`}
+        title="Удалить"
+      >
+        <AiFillDelete className={styles.icon} />
+      </button>
+    </li>
   );
 
   const editTask = (
-      <li>
-        <form
-            className={styles.form}
-            onSubmit={(event) => handleChangeValueInInput(event, task.id, changingTaskValue)}
+    <li>
+      <form
+        className={styles.form}
+        onSubmit={(event) =>
+          handleChangeValueInInput(event, task.id, changingTaskValue)
+        }
+      >
+        <input
+          className={styles.input}
+          type="text"
+          value={changingTaskValue}
+          onChange={(event) => setChangingTaskValue(event.target.value)}
+        />
+        <button className={styles.button} type="submit" title="Сохранить">
+          <FaRegSave className={styles.icon} />
+        </button>
+        <button
+          className={`${styles.button} ${styles.deleteButton}`}
+          onClick={() => handleCancelEdit(task.title)}
+          type="button"
+          title="Отменить"
         >
-          <input
-              className={styles.input}
-              type="text"
-              value={changingTaskValue}
-              onChange={(event) => setChangingTaskValue(event.target.value)}
-          />
-          <button className={styles.button} type="submit" title="Сохранить">
-            <FaRegSave className={styles.icon} />
-          </button>
-          <button
-              className={`${styles.button} ${styles.deleteButton}`}
-              onClick={() => handleCancelEdit(task.title)}
-              type="button"
-              title="Отменить"
-          >
-            <MdCancel className={styles.icon} />
-          </button>
-        </form>
-      </li>
+          <MdCancel className={styles.icon} />
+        </button>
+      </form>
+    </li>
   );
 
   return isEditing ? editTask : initialTask;

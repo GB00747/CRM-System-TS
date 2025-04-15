@@ -27,8 +27,6 @@ export default function TodoForm({ updateTasks }: TodoFormProps) {
     }
   };
 
-
-
   return (
     <form className={styles.form} onSubmit={addTask}>
       <input
