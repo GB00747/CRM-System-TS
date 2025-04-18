@@ -5,7 +5,7 @@ import {
   FilteredTasksResponse,
   TaskInfo,
   Filter,
-} from "../api/api.types.ts";
+} from "../types/todoTypes.ts";
 
 import "../Styles/App.css";
 import TodoForm from "../components/TodoForm/TodoForm";
@@ -14,7 +14,7 @@ import TodoListOfTasks from "../components/TodoListOfTasks/TodoListOfTasks";
 
 export function TodoListPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>(Filter.All);
   const [taskCounts, setTaskCounts] = useState<TaskInfo>({
     all: 0,
     inWork: 0,
@@ -26,10 +26,16 @@ export function TodoListPage() {
   }, [filter]);
 
   const fetchFilteredTasksApi = async (filter: Filter): Promise<void> => {
-    const data: FilteredTasksResponse | null = await filteredTasksApi(filter);
-    if (data) {
-      setTasks(data.data);
-      setTaskCounts(data.info);
+    try {
+      const data: FilteredTasksResponse | undefined =
+        await filteredTasksApi(filter);
+      if (data) {
+        setTasks(data.data);
+        setTaskCounts(data.info);
+      }
+    } catch (error) {
+      console.error("Ошибка при загрузке отфильтрованных задач:", error);
+      alert("Ошибка при загрузке отфильтрованных задач");
     }
   };
 

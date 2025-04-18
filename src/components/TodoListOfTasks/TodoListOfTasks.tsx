@@ -1,6 +1,6 @@
 import styles from "./TodoListOfTasks.module.css";
 
-import { TaskInfo, Filter } from "../../api/api.types.ts";
+import { Filter, TaskInfo } from "../../types/todoTypes.ts";
 
 interface Props {
   handleChangeFilteredTasks: (filter: Filter) => void;
@@ -18,24 +18,24 @@ export default function TodoListOfTasks({
       <ul className={styles.list}>
         <li className={styles.item}>
           <button
-            className={`${styles.button} ${filter === "all" ? styles.active : ""}`}
-            onClick={() => handleChangeFilteredTasks("all")}
+            className={`${styles.button} ${filter === Filter.All ? styles.active : ""}`}
+            onClick={() => handleChangeFilteredTasks(Filter.All)}
           >
             Все ({taskCounts.all})
           </button>
         </li>
         <li className={styles.item}>
           <button
-            className={`${styles.button} ${filter === "inWork" ? styles.active : ""}`}
-            onClick={() => handleChangeFilteredTasks("inWork")}
+            className={`${styles.button} ${filter === Filter.InWork ? styles.active : ""}`}
+            onClick={() => handleChangeFilteredTasks(Filter.InWork)}
           >
             В работе ({taskCounts.inWork})
           </button>
         </li>
         <li className={styles.item}>
           <button
-            className={`${styles.button} ${filter === "completed" ? styles.active : ""}`}
-            onClick={() => handleChangeFilteredTasks("completed")}
+            className={`${styles.button} ${filter === Filter.Completed ? styles.active : ""}`}
+            onClick={() => handleChangeFilteredTasks(Filter.Completed)}
           >
             Сделано ({taskCounts.completed})
           </button>

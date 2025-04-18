@@ -1,6 +1,6 @@
 import Task from "../Task/Task";
 import styles from "./TodoTasks.module.css";
-import { Task as TaskType } from "../../api/api.types.ts";
+import { Task as TaskType } from "../../types/todoTypes.ts";
 
 interface Props {
   tasks: TaskType[];
