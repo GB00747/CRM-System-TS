@@ -31,7 +31,10 @@ export function TodoListPage() {
         await filteredTasksApi(filter);
       if (data) {
         setTasks(data.data);
-        setTaskCounts(data.info);
+
+        if (data.info) {
+          setTaskCounts(data.info);
+        }
       }
     } catch (error) {
       console.error("Ошибка при загрузке отфильтрованных задач:", error);

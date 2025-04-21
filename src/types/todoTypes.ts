@@ -19,14 +19,12 @@ export type TaskInfo = {
   inWork: number;
 };
 
-export type TaskMeta = {
-  totalAmount: number;
+export type MetaResponse<T, N> = {
+  data: T[];
+  info?: N;
+  meta: {
+    totalAmount: number;
+  };
 };
 
-export type ApiResponse<T> = {
-  data: T;
-  info: TaskInfo;
-  meta: TaskMeta;
-};
-
-export type FilteredTasksResponse = ApiResponse<Task[]>;
+export type FilteredTasksResponse = MetaResponse<Task, TaskInfo>;

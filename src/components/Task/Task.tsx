@@ -6,7 +6,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { FaRegSave } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 
-import { useState, useEffect, useRef } from "react";
+import { useState} from "react";
 
 import { deleteTaskApi, updateTaskApi } from "../../api/api";
 
@@ -23,13 +23,7 @@ export default function Task({ task, updateTasks }: Props) {
   );
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isEditing]);
 
   const handleClickDeleteTask = async (id: number) => {
     try {
@@ -64,13 +58,6 @@ export default function Task({ task, updateTasks }: Props) {
     handleEndEdit();
   };
 
-  const handleKeyboardKeyDown = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (event.key === "Escape") {
-      handleClickCancelEdit(task.title);
-    }
-  };
 
   const handleSubmitEditTask = async (
     event: React.FormEvent<HTMLFormElement>,
@@ -142,8 +129,7 @@ export default function Task({ task, updateTasks }: Props) {
           type="text"
           value={changingTaskValue}
           onChange={(event) => setChangingTaskValue(event.target.value)}
-          onKeyDown={handleKeyboardKeyDown}
-          ref={inputRef}
+
         />
         <button className={styles.button} type="submit" title="Сохранить">
           <FaRegSave className={styles.icon} />
