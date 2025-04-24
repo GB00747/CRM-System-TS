@@ -1,13 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { filteredTasksApi } from "../api/api";
-import {
-  Task,
-  FilteredTasksResponse,
-  TaskInfo,
-  Filter,
-} from "../types/todoTypes.ts";
+import { Task, TaskInfo, Filter } from "../types/todoTypes.ts";
 
-import "../Styles/App.css";
 import TodoForm from "../components/TodoForm/TodoForm";
 import TodoTasks from "../components/TodoTasks/TodoTasks";
 import TodoListOfTasks from "../components/TodoListOfTasks/TodoListOfTasks";
@@ -21,20 +15,14 @@ export function TodoListPage() {
     completed: 0,
   });
 
-  useEffect(() => {
-    fetchFilteredTasksApi(filter);
-  }, [filter]);
+  const intervalRef = useRef<number | null>(null);
 
-  const fetchFilteredTasksApi = async (filter: Filter): Promise<void> => {
+  const fetchAndSetTasks = async (filter: Filter) => {
     try {
-      const data: FilteredTasksResponse | undefined =
-        await filteredTasksApi(filter);
+      const data = await filteredTasksApi(filter);
       if (data) {
         setTasks(data.data);
-
-        if (data.info) {
-          setTaskCounts(data.info);
-        }
+        if (data.info) setTaskCounts(data.info);
       }
     } catch (error) {
       console.error("Ошибка при загрузке отфильтрованных задач:", error);
@@ -42,17 +30,37 @@ export function TodoListPage() {
     }
   };
 
-  const updateTasks = (): Promise<void> => fetchFilteredTasksApi(filter);
+  useEffect(() => {
+    fetchAndSetTasks(filter);
 
-  const handleChangeFilteredTasks = (filter: Filter) => {
-    setFilter(filter);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = window.setInterval(() => {
+      fetchAndSetTasks(filter);
+    }, 5000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [filter]);
+
+  const updateTasks = async () => {
+    await fetchAndSetTasks(filter);
+  };
+
+  const handleClickFilteredTasks = (newFilter: Filter) => {
+    setFilter(newFilter);
   };
 
   return (
     <>
       <TodoForm updateTasks={updateTasks} />
       <TodoListOfTasks
-        handleChangeFilteredTasks={handleChangeFilteredTasks}
+        handleClickFilteredTasks={handleClickFilteredTasks}
         taskCounts={taskCounts}
         filter={filter}
       />

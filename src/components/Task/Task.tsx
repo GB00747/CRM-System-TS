@@ -1,15 +1,20 @@
-import React from "react";
-import styles from "./Task.module.css";
-
+import { useState } from "react";
 import { MdEditSquare } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import { FaRegSave } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
-
-import { useState} from "react";
-
+import {
+  Form,
+  Input,
+  Button,
+  message,
+  Checkbox,
+  Space,
+  Typography,
+  Row,
+  Col,
+} from "antd";
 import { deleteTaskApi, updateTaskApi } from "../../api/api";
-
 import { Task as TaskType } from "../../types/todoTypes.ts";
 
 interface Props {
@@ -18,12 +23,10 @@ interface Props {
 }
 
 export default function Task({ task, updateTasks }: Props) {
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [changingTaskValue, setChangingTaskValue] = useState<string>(
     task.title,
   );
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-
-
 
   const handleClickDeleteTask = async (id: number) => {
     try {
@@ -31,17 +34,17 @@ export default function Task({ task, updateTasks }: Props) {
       await updateTasks();
     } catch (error) {
       console.error("Ошибка при удалении задачи:", error);
-      alert("Не удалось удалить задачу");
+      message.error("Не удалось удалить задачу");
     }
   };
 
-  const handleChangeIsDone = async (id: number, task: TaskType) => {
+  const handleClickChangeIsDone = async (id: number, task: TaskType) => {
     try {
       await updateTaskApi(id, { isDone: !task.isDone });
       await updateTasks();
     } catch (error) {
       console.error("Ошибка при изменении статуса задачи:", error);
-      alert("Ошибка при изменении статуса задачи");
+      message.error("Ошибка при изменении статуса задачи");
     }
   };
 
@@ -49,101 +52,124 @@ export default function Task({ task, updateTasks }: Props) {
     setIsEditing(true);
   };
 
-  const handleEndEdit = () => {
+  const handleClickEndEdit = () => {
     setIsEditing(false);
   };
 
-  const handleClickCancelEdit = (value: string) => {
-    setChangingTaskValue(value);
-    handleEndEdit();
+  const handleClickCancelEdit = () => {
+    setChangingTaskValue(task.title);
+    handleClickEndEdit();
   };
 
-
-  const handleSubmitEditTask = async (
-    event: React.FormEvent<HTMLFormElement>,
+  const handleClickSubmitEditTask = async (
+    values: { title: string },
     id: number,
-    title: string,
   ) => {
-    event.preventDefault();
-
-    const trimTitle = title.trim();
-    if (trimTitle.length < 2 || trimTitle.length > 64) {
-      alert("Количество символов минимум 2 максимум 64");
-      return;
-    }
-
     try {
-      const updateTask = await updateTaskApi(id, { title: trimTitle });
+      const updatedTask = await updateTaskApi(id, { title: values.title });
 
-      if (!updateTask) {
-        alert("Не удалось обновить задачу");
+      if (!updatedTask) {
+        message.error("Не удалось обновить задачу");
         return;
       }
       await updateTasks();
-      setChangingTaskValue(updateTask.title);
-      handleEndEdit();
+      setChangingTaskValue(updatedTask.title);
+      handleClickEndEdit();
     } catch (error) {
       console.error("Ошибка при обновлении задачи:", error);
-      alert("Произошла ошибка при обновлении задачи");
+      message.error("Произошла ошибка при обновлении задачи");
     }
   };
 
   const initialTask = (
-    <li className={styles.task}>
-      <input
-        type="checkbox"
-        checked={task.isDone}
-        onChange={() => handleChangeIsDone(task.id, task)}
-        className={styles.checkbox}
-      />
-      <div className={styles.title}>{task.title}</div>
-      <button
-        type="button"
-        onClick={handleClickStartEdit}
-        className={styles.button}
-        title="Редактировать"
-      >
-        <MdEditSquare className={styles.icon} />
-      </button>
-      <button
-        type="button"
-        onClick={() => handleClickDeleteTask(task.id)}
-        className={`${styles.button} ${styles.deleteButton}`}
-        title="Удалить"
-      >
-        <AiFillDelete className={styles.icon} />
-      </button>
-    </li>
+    <Row
+      align="middle"
+      justify="space-between"
+      style={{
+        width: "100%",
+        padding: "8px 16px",
+        backgroundColor: "#fff",
+        borderRadius: 8,
+      }}
+    >
+      <Col>
+        <Row align="middle" gutter={8}>
+          <Col>
+            <Checkbox
+              checked={task.isDone}
+              onChange={() => handleClickChangeIsDone(task.id, task)}
+            />
+          </Col>
+          <Col>
+            <Typography.Text>{task.title}</Typography.Text>
+          </Col>
+        </Row>
+      </Col>
+
+      <Col>
+        <Row align="middle" gutter={8}>
+          <Col>
+            <Button
+              type="default"
+              onClick={handleClickStartEdit}
+              icon={<MdEditSquare />}
+              title="Редактировать"
+            />
+          </Col>
+          <Col>
+            <Button
+              type="default"
+              danger
+              onClick={() => handleClickDeleteTask(task.id)}
+              icon={<AiFillDelete />}
+              title="Удалить"
+            />
+          </Col>
+        </Row>
+      </Col>
+    </Row>
   );
 
   const editTask = (
-    <li>
-      <form
-        className={styles.form}
-        onSubmit={(event) =>
-          handleSubmitEditTask(event, task.id, changingTaskValue)
-        }
+    <Form
+      onFinish={(values) => handleClickSubmitEditTask(values, task.id)}
+      initialValues={{ title: changingTaskValue }}
+      layout="inline"
+      style={{ width: "100%", display: "flex", justifyContent: "space-around" }}
+    >
+      <Form.Item
+        name="title"
+        rules={[
+          { required: true, message: "Поле не может быть пустым" },
+          {
+            min: 2,
+            max: 64,
+            message: "Количество символов должно быть от 2 до 64",
+          },
+        ]}
+        style={{ flexGrow: 1, padding: 0 }}
       >
-        <input
-          className={styles.input}
-          type="text"
+        <Input
           value={changingTaskValue}
           onChange={(event) => setChangingTaskValue(event.target.value)}
-
+          placeholder="Изменить задачу"
         />
-        <button className={styles.button} type="submit" title="Сохранить">
-          <FaRegSave className={styles.icon} />
-        </button>
-        <button
-          className={`${styles.button} ${styles.deleteButton}`}
-          onClick={() => handleClickCancelEdit(task.title)}
-          type="button"
-          title="Отменить"
-        >
-          <MdCancel className={styles.icon} />
-        </button>
-      </form>
-    </li>
+      </Form.Item>
+      <Form.Item style={{ margin: 0 }}>
+        <Space>
+          <Button type="primary" htmlType="submit" icon={<FaRegSave />}>
+            Сохранить
+          </Button>
+          <Button
+            type="default"
+            onClick={handleClickCancelEdit}
+            icon={<MdCancel />}
+          >
+            Отменить
+          </Button>
+        </Space>
+      </Form.Item>
+    </Form>
   );
 
   return isEditing ? editTask : initialTask;

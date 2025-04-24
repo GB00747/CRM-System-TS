@@ -1,6 +1,6 @@
-import styles from "./TodoForm.module.css";
 import { addTaskApi } from "../../api/api";
-import { useState, FormEvent  } from "react";
+import { useState } from "react";
+import { Button, Form, Input, message } from "antd";
 
 type TodoFormProps = {
   updateTasks: () => void;
@@ -9,44 +9,61 @@ type TodoFormProps = {
 export default function TodoForm({ updateTasks }: TodoFormProps) {
   const [taskValue, setTaskValue] = useState<string>("");
 
-
-
-  const addTask = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const handleButtonAddTask = async () => {
     const trimmedValue = taskValue.trim();
     if (!trimmedValue) return;
-
-    if (trimmedValue.length < 2 || trimmedValue.length > 64) {
-      alert("Количество символов: минимум 2, максимум 64");
-      return;
-    }
 
     try {
       const newTask = await addTaskApi(trimmedValue);
       if (newTask) {
         setTaskValue("");
         updateTasks();
+        message.success("Задача добавлена");
       }
     } catch (error) {
       console.error("Ошибка при добавлении задачи:", error);
-      alert("Произошла ошибка при добавлении задачи");
+      message.error("Произошла ошибка при добавлении задачи");
     }
   };
 
-
   return (
-    <form className={styles.form} onSubmit={addTask}>
-      <input
-        className={styles.input}
-        type="text"
-        placeholder="Task to be done..."
-        value={taskValue}
-        onChange={(event) => setTaskValue(event.target.value)}
-      />
-      <button className={styles.button} type="submit" title="Добавить">
-        Add
-      </button>
-    </form>
+    <Form
+      layout="inline"
+      onFinish={handleButtonAddTask}
+      style={{ display: "flex" }}
+    >
+      <Form.Item
+        style={{ flexGrow: "1" }}
+        name="title"
+        rules={[
+          {
+            required: true,
+            message: "Задача не может быть пустой",
+          },
+          {
+            min: 2,
+            message: "Название задачи должно содержать минимум 2 символа",
+          },
+          {
+            max: 64,
+            message: "Название задачи не может быть длиннее 64 символов",
+          },
+        ]}
+      >
+        <Input
+          type="text"
+          placeholder="Task to be done..."
+          value={taskValue}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setTaskValue(event.target.value)
+          }
+        />
+      </Form.Item>
+      <Form.Item style={{ margin: "0" }}>
+        <Button type="primary" htmlType="submit" title="Добавить">
+          Add
+        </Button>
+      </Form.Item>
+    </Form>
   );
 }

@@ -1,46 +1,41 @@
-import styles from "./TodoListOfTasks.module.css";
-
+import { Segmented } from "antd";
 import { Filter, TaskInfo } from "../../types/todoTypes.ts";
 
 interface Props {
-  handleChangeFilteredTasks: (filter: Filter) => void;
+  handleClickFilteredTasks: (filter: Filter) => void;
   filter: Filter;
   taskCounts: TaskInfo;
 }
 
 export default function TodoListOfTasks({
-  handleChangeFilteredTasks,
+  handleClickFilteredTasks,
   filter,
   taskCounts,
 }: Props) {
+  const options = [
+    {
+      label: `Все (${taskCounts.all})`,
+      value: Filter.All,
+    },
+    {
+      label: `В работе (${taskCounts.inWork})`,
+      value: Filter.InWork,
+    },
+    {
+      label: `Сделано (${taskCounts.completed})`,
+      value: Filter.Completed,
+    },
+  ];
+
   return (
-    <div className={styles.container}>
-      <ul className={styles.list}>
-        <li className={styles.item}>
-          <button
-            className={`${styles.button} ${filter === Filter.All ? styles.active : ""}`}
-            onClick={() => handleChangeFilteredTasks(Filter.All)}
-          >
-            Все ({taskCounts.all})
-          </button>
-        </li>
-        <li className={styles.item}>
-          <button
-            className={`${styles.button} ${filter === Filter.InWork ? styles.active : ""}`}
-            onClick={() => handleChangeFilteredTasks(Filter.InWork)}
-          >
-            В работе ({taskCounts.inWork})
-          </button>
-        </li>
-        <li className={styles.item}>
-          <button
-            className={`${styles.button} ${filter === Filter.Completed ? styles.active : ""}`}
-            onClick={() => handleChangeFilteredTasks(Filter.Completed)}
-          >
-            Сделано ({taskCounts.completed})
-          </button>
-        </li>
-      </ul>
+    <div style={{ padding: "16px", display: "flex", justifyContent: "center" }}>
+      <Segmented<Filter>
+        style={{ minWidth: "25em" }}
+        options={options}
+        value={filter}
+        onChange={handleClickFilteredTasks}
+        block
+      />
     </div>
   );
 }
