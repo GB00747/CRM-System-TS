@@ -1,5 +1,4 @@
 import { addTaskApi } from "../../api/api";
-import { useState } from "react";
 import { Button, Form, Input, message } from "antd";
 
 type TodoFormProps = {
@@ -7,16 +6,16 @@ type TodoFormProps = {
 };
 
 export default function TodoForm({ updateTasks }: TodoFormProps) {
-  const [taskValue, setTaskValue] = useState<string>("");
+  const [form] = Form.useForm<{ title: string }>();
 
-  const handleButtonAddTask = async () => {
-    const trimmedValue = taskValue.trim();
+  const handleButtonAddTask = async (values: { title: string }) => {
+    const trimmedValue = values.title.trim();
     if (!trimmedValue) return;
 
     try {
       const newTask = await addTaskApi(trimmedValue);
       if (newTask) {
-        setTaskValue("");
+        form.resetFields();
         updateTasks();
         message.success("Задача добавлена");
       }
@@ -50,14 +49,7 @@ export default function TodoForm({ updateTasks }: TodoFormProps) {
           },
         ]}
       >
-        <Input
-          type="text"
-          placeholder="Task to be done..."
-          value={taskValue}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            setTaskValue(event.target.value)
-          }
-        />
+        <Input type="text" placeholder="Task to be done..." />
       </Form.Item>
       <Form.Item style={{ margin: "0" }}>
         <Button type="primary" htmlType="submit" title="Добавить">

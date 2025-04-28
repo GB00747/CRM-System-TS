@@ -24,9 +24,9 @@ interface Props {
 
 export default function Task({ task, updateTasks }: Props) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [changingTaskValue, setChangingTaskValue] = useState<string>(
-    task.title,
-  );
+  const [taskValue, setTaskValue] = useState<string>(task.title);
+
+  const [form] = Form.useForm<{ title: string }>();
 
   const handleClickDeleteTask = async (id: number) => {
     try {
@@ -50,6 +50,7 @@ export default function Task({ task, updateTasks }: Props) {
 
   const handleClickStartEdit = () => {
     setIsEditing(true);
+    form.setFieldsValue({ title: taskValue });
   };
 
   const handleClickEndEdit = () => {
@@ -57,7 +58,8 @@ export default function Task({ task, updateTasks }: Props) {
   };
 
   const handleClickCancelEdit = () => {
-    setChangingTaskValue(task.title);
+    form.setFieldsValue({ title: task.title });
+    setTaskValue(task.title);
     handleClickEndEdit();
   };
 
@@ -73,7 +75,8 @@ export default function Task({ task, updateTasks }: Props) {
         return;
       }
       await updateTasks();
-      setChangingTaskValue(updatedTask.title);
+      setTaskValue(updatedTask.title);
+      form.setFieldsValue({ title: task.title });
       handleClickEndEdit();
     } catch (error) {
       console.error("Ошибка при обновлении задачи:", error);
@@ -132,12 +135,13 @@ export default function Task({ task, updateTasks }: Props) {
 
   const editTask = (
     <Form
+      form={form}
       onFinish={(values) => handleClickSubmitEditTask(values, task.id)}
-      initialValues={{ title: changingTaskValue }}
       layout="inline"
       style={{ width: "100%", display: "flex", justifyContent: "space-around" }}
     >
       <Form.Item
+        initialValue={taskValue}
         name="title"
         rules={[
           { required: true, message: "Поле не может быть пустым" },
@@ -150,8 +154,8 @@ export default function Task({ task, updateTasks }: Props) {
         style={{ flexGrow: 1, padding: 0 }}
       >
         <Input
-          value={changingTaskValue}
-          onChange={(event) => setChangingTaskValue(event.target.value)}
+          value={taskValue}
+          onChange={(e) => setTaskValue(e.target.value)}
           placeholder="Изменить задачу"
         />
       </Form.Item>

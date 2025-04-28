@@ -5,21 +5,21 @@ import {
   Link,
   useLocation,
 } from "react-router-dom";
-import {TodoListPage} from "./pages/TodoListPage";
-import {ProfilePage} from "./pages/ProfilePage";
+import { TodoListPage } from "./pages/TodoListPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import "antd/dist/reset.css";
-import {Layout, Menu} from "antd";
-import {UnorderedListOutlined, UserOutlined} from "@ant-design/icons";
+import { Layout, Menu } from "antd";
+import { UnorderedListOutlined, UserOutlined } from "@ant-design/icons";
 
-const {Header, Sider, Content} = Layout;
+const { Header, Sider, Content } = Layout;
 
 function App() {
   return (
     <Router>
-      <Layout style={{minHeight: "100vh"}}>
+      <Layout style={{ minHeight: "100vh" }}>
         <Sider theme="light">
-          <div style={{padding: "16px", fontWeight: "bold"}}>Меню</div>
-          <CustomMenu/>
+          <div style={{ padding: "16px", fontWeight: "bold" }}>Меню</div>
+          <CustomMenu />
         </Sider>
         <Layout>
           <Header
@@ -29,12 +29,12 @@ function App() {
               justifyContent: "center",
             }}
           >
-            <h1 style={{margin: "0"}}> ToDo App</h1>
+            <h1 style={{ margin: "0" }}> ToDo App</h1>
           </Header>
-          <Content style={{padding: "1rem", backgroundColor: "#fff"}}>
+          <Content style={{ padding: "1rem", backgroundColor: "#fff" }}>
             <Routes>
-              <Route path="/" element={<TodoListPage/>}/>
-              <Route path="/profile" element={<ProfilePage/>}/>
+              <Route path="/" element={<TodoListPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Routes>
           </Content>
         </Layout>
@@ -53,12 +53,12 @@ function CustomMenu() {
       items={[
         {
           key: "/",
-          icon: <UnorderedListOutlined/>,
+          icon: <UnorderedListOutlined />,
           label: <Link to="/">Задачи</Link>,
         },
         {
           key: "/profile",
-          icon: <UserOutlined/>,
+          icon: <UserOutlined />,
           label: <Link to="/profile">Профиль</Link>,
         },
       ]}

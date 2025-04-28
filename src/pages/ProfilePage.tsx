@@ -1,6 +1,10 @@
+import { Typography } from "antd";
+
 export function ProfilePage() {
+  const { Title } = Typography;
+
   return (
-    <h2
+    <Title
       style={{
         height: "100vh",
         display: "flex",
@@ -9,6 +13,6 @@ export function ProfilePage() {
       }}
     >
       Hello!
-    </h2>
+    </Title>
   );
 }
