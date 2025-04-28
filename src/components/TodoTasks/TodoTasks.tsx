@@ -1,5 +1,5 @@
+import { List } from "antd";
 import Task from "../Task/Task";
-import styles from "./TodoTasks.module.css";
 import { Task as TaskType } from "../../types/todoTypes.ts";
 
 interface Props {
@@ -9,12 +9,14 @@ interface Props {
 
 export default function TodoTasks({ tasks, updateTasks }: Props) {
   return (
-    <div>
-      <ul className={styles.todoList}>
-        {tasks.map((task) => (
-          <Task key={task.id} task={task} updateTasks={updateTasks} />
-        ))}
-      </ul>
-    </div>
+    <List
+      dataSource={tasks}
+      renderItem={(task) => (
+        <List.Item key={task.id} style={{ padding: "0.5rem" }}>
+          <Task task={task} updateTasks={updateTasks} />
+        </List.Item>
+      )}
+      bordered
+    />
   );
 }
