@@ -1,55 +1,47 @@
-import { useState, useEffect, useRef } from "react";
-import { filteredTasksApi } from "../api/api";
-import { Task, TaskInfo, Filter } from "../types/todoTypes.ts";
+import {useState, useEffect, useCallback} from "react";
+import {Task, TaskInfo, Filter} from "../features/todos/todoTypes.ts";
+import {useDispatch, useSelector} from "react-redux";
+
+import {fetchTodos} from '../features/todos/TodoSlice.ts'
+import {RootState, AppDispatch} from "../app/store.ts";
 
 import TodoForm from "../components/TodoForm/TodoForm";
 import TodoTasks from "../components/TodoTasks/TodoTasks";
 import TodoListOfTasks from "../components/TodoListOfTasks/TodoListOfTasks";
 
-export function TodoListPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+
+function TodoListPage() {
+
+
+  const todos: Task[] = useSelector(
+    (state: RootState) => state.todos.todos
+  )
+
+  const taskCounts: TaskInfo = useSelector(
+    (state: RootState) => state.todos.info
+  )
+
+  const dispatch: AppDispatch = useDispatch()
+
   const [filter, setFilter] = useState<Filter>(Filter.All);
-  const [taskCounts, setTaskCounts] = useState<TaskInfo>({
-    all: 0,
-    inWork: 0,
-    completed: 0,
-  });
 
-  const intervalRef = useRef<number | null>(null);
+  const fetchTasksByFilter = useCallback(() => {
+    dispatch(fetchTodos(filter));
+  }, [dispatch, filter])
 
-  const fetchAndSetTasks = async (filter: Filter) => {
-    try {
-      const data = await filteredTasksApi(filter);
-      if (data) {
-        setTasks(data.data);
-        if (data.info) setTaskCounts(data.info);
-      }
-    } catch (error) {
-      console.error("Ошибка при загрузке отфильтрованных задач:", error);
-      alert("Ошибка при загрузке отфильтрованных задач");
-    }
-  };
 
   useEffect(() => {
-    fetchAndSetTasks(filter);
+    fetchTasksByFilter()
 
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-
-    intervalRef.current = window.setInterval(() => {
-      fetchAndSetTasks(filter);
+    const interval = setInterval(() => {
+      fetchTasksByFilter()
     }, 5000);
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [filter]);
+    return () => clearInterval(interval);
+  }, [fetchTasksByFilter]);
 
   const updateTasks = async () => {
-    await fetchAndSetTasks(filter);
+    fetchTasksByFilter()
   };
 
   const handleClickFilteredTasks = (newFilter: Filter) => {
@@ -58,13 +50,15 @@ export function TodoListPage() {
 
   return (
     <>
-      <TodoForm updateTasks={updateTasks} />
+      <TodoForm updateTasks={updateTasks}/>
       <TodoListOfTasks
         handleClickFilteredTasks={handleClickFilteredTasks}
         taskCounts={taskCounts}
         filter={filter}
       />
-      <TodoTasks tasks={tasks} updateTasks={updateTasks} />
+      <TodoTasks tasks={todos} updateTasks={updateTasks}/>
     </>
   );
 }
+
+export default TodoListPage

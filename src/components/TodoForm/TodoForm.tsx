@@ -1,4 +1,4 @@
-import { addTaskApi } from "../../api/api";
+import { todosApi } from "@/api/todosApi.ts";
 import { Button, Form, Input, message } from "antd";
 
 type TodoFormProps = {
@@ -13,7 +13,7 @@ export default function TodoForm({ updateTasks }: TodoFormProps) {
     if (!trimmedValue) return;
 
     try {
-      const newTask = await addTaskApi(trimmedValue);
+      const newTask = await todosApi.addTask(trimmedValue);
       if (newTask) {
         form.resetFields();
         updateTasks();
@@ -27,6 +27,7 @@ export default function TodoForm({ updateTasks }: TodoFormProps) {
 
   return (
     <Form
+      form={form}
       layout="inline"
       onFinish={handleButtonAddTask}
       style={{ display: "flex" }}

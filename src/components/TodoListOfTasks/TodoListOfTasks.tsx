@@ -1,10 +1,10 @@
 import { Segmented } from "antd";
-import { Filter, TaskInfo } from "../../types/todoTypes.ts";
+import { Filter, TaskInfo } from "@/features/todos/todoTypes";
 
 interface Props {
   handleClickFilteredTasks: (filter: Filter) => void;
   filter: Filter;
-  taskCounts: TaskInfo;
+  taskCounts: TaskInfo ;
 }
 
 export default function TodoListOfTasks({
@@ -12,6 +12,7 @@ export default function TodoListOfTasks({
   filter,
   taskCounts,
 }: Props) {
+
   const options = [
     {
       label: `Все (${taskCounts.all})`,

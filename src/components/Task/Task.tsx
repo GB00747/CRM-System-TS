@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/app/store.ts";
 import { MdEditSquare } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import { FaRegSave } from "react-icons/fa";
@@ -14,8 +16,10 @@ import {
   Row,
   Col,
 } from "antd";
-import { deleteTaskApi, updateTaskApi } from "../../api/api";
-import { Task as TaskType } from "../../types/todoTypes.ts";
+
+import { Task as TaskType } from "@/features/todos/todoTypes.ts";
+
+import { deleteTodo, updateTodo } from "@/features/todos/TodoSlice.ts";
 
 interface Props {
   task: TaskType;
@@ -23,6 +27,8 @@ interface Props {
 }
 
 export default function Task({ task, updateTasks }: Props) {
+  const dispatch = useDispatch<AppDispatch>();
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [taskValue, setTaskValue] = useState<string>(task.title);
 
@@ -30,8 +36,9 @@ export default function Task({ task, updateTasks }: Props) {
 
   const handleClickDeleteTask = async (id: number) => {
     try {
-      await deleteTaskApi(id);
+      await dispatch(deleteTodo(id)).unwrap();
       await updateTasks();
+      message.success("Задача удалена");
     } catch (error) {
       console.error("Ошибка при удалении задачи:", error);
       message.error("Не удалось удалить задачу");
@@ -40,8 +47,9 @@ export default function Task({ task, updateTasks }: Props) {
 
   const handleClickChangeIsDone = async (id: number, task: TaskType) => {
     try {
-      await updateTaskApi(id, { isDone: !task.isDone });
+      await dispatch(updateTodo({ id, data: { isDone: !task.isDone } })).unwrap();
       await updateTasks();
+      message.success("Статус задачи обновлен");
     } catch (error) {
       console.error("Ошибка при изменении статуса задачи:", error);
       message.error("Ошибка при изменении статуса задачи");
@@ -65,19 +73,23 @@ export default function Task({ task, updateTasks }: Props) {
 
   const handleClickSubmitEditTask = async (
     values: { title: string },
-    id: number,
+    id: number
   ) => {
     try {
-      const updatedTask = await updateTaskApi(id, { title: values.title });
+      const updatedTask = await dispatch(
+        updateTodo({ id, data: { title: values.title } })
+      ).unwrap();
 
       if (!updatedTask) {
         message.error("Не удалось обновить задачу");
         return;
       }
+
       await updateTasks();
       setTaskValue(updatedTask.title);
-      form.setFieldsValue({ title: task.title });
+      form.setFieldsValue({ title: updatedTask.title });
       handleClickEndEdit();
+      message.success("Задача обновлена");
     } catch (error) {
       console.error("Ошибка при обновлении задачи:", error);
       message.error("Произошла ошибка при обновлении задачи");
@@ -157,6 +169,7 @@ export default function Task({ task, updateTasks }: Props) {
           value={taskValue}
           onChange={(e) => setTaskValue(e.target.value)}
           placeholder="Изменить задачу"
+          autoFocus
         />
       </Form.Item>
       <Form.Item style={{ margin: 0 }}>
