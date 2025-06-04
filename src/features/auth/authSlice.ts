@@ -10,13 +10,13 @@ import {
 
 interface AuthState {
   user: UserResponse | null;
-  error: string | null;
+  error: string ;
   status: "idle" | "success" | "error";
 }
 
 const initialState: AuthState = {
   user: null,
-  error: null,
+  error: '',
   status: 'idle',
 };
 
@@ -93,7 +93,7 @@ const authSlice = createSlice({
     logout(state) {
       state.user = null;
       state.status = "idle";
-      state.error = null;
+      state.error = '';
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
     },
@@ -101,15 +101,15 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(register.pending, (state) => {
-        state.error = null;
+        state.error = '';
       })
       .addCase(register.rejected, (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload ?? "Неизвестная ошибка регистрации.";
       })
 
 
       .addCase(login.fulfilled, (state) => {
-        state.error = null;
+        state.error = '';
         state.status = 'success'
       })
 
@@ -118,7 +118,7 @@ const authSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(getProfile.rejected, (state, action) => {
-        state.error = action.payload
+        state.error = action.payload ?? 'Неизвестная ошибка при получении профиля'
       })
   },
 });

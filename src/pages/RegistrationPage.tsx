@@ -45,7 +45,7 @@ export default function RegistrationPage() {
 
 
   return (
-    <AuthLayout title="Регистрация">
+    <AuthLayout title='Регистрация'>
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item
           label="Имя пользователя"

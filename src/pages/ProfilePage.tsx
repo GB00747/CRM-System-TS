@@ -3,6 +3,7 @@ import { Typography } from "antd";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "@/app/store";
 import {getProfile} from "@/features/auth/authSlice";
+import { UserResponse } from "@/features/auth/authTypes";
 
 const { Title, Text } = Typography;
 
@@ -10,7 +11,7 @@ const { Title, Text } = Typography;
 
 export default function ProfilePage() {
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector<RootState>((state) => state.auth.user);
+  const user = useSelector<RootState, UserResponse | null>((state) => state.auth.user);
 
 
   useEffect(() => {
@@ -20,7 +21,6 @@ export default function ProfilePage() {
   if (!user) {
     return <div>Данные профиля не найдены</div>;
   }
-
 
   return (
     <div className="max-w-md mx-auto p-4 mt-10 shadow-lg rounded-xl">

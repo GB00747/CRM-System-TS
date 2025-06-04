@@ -15,7 +15,7 @@ export const todosApi = {
 
   filteredTasks: async (
     filter: Filter,
-  ): Promise<FilteredTasksResponse | undefined> => {
+  ): Promise<FilteredTasksResponse> => {
     const response = await axiosInstance.get<FilteredTasksResponse>("/todos", {
       params: { filter },
     });
@@ -30,7 +30,7 @@ export const todosApi = {
   updateTask: async (
     id: number,
     data: UpdateTask,
-  ): Promise<Task | undefined> => {
+  ): Promise<Task> => {
     const response = await axiosInstance.put<Task>(`/todos/${id}`, data);
     return response.data;
   },

@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {Filter, Task, TaskInfo} from './todoTypes'
+import {Filter, Task, TaskInfo, FilteredTasksResponse} from './todoTypes'
 import {todosApi} from "@/api/todosApi";
 
 export interface TodosState {
@@ -25,18 +25,26 @@ const initialState: TodosState = {
   error: null,
 };
 
-export const fetchTodos = createAsyncThunk(
+export const fetchTodos = createAsyncThunk<
+  FilteredTasksResponse,
+  Filter,
+  { rejectValue: string }
+>(
   'todos/fetchTodos',
-  async (filter: Filter, thunkAPI) => {
+  async (
+    filter,
+    { rejectWithValue }
+  ) => {
     try {
       const data = await todosApi.filteredTasks(filter);
       return data;
-    } catch (error) {
-
-      return thunkAPI.rejectWithValue("Ошибка при загрузке задач");
+    } catch (error: unknown) {
+      // Обязательно return!
+      return rejectWithValue("Ошибка при загрузке задач");
     }
   }
 );
+
 
 export const deleteTodo = createAsyncThunk(
   'todos/deleteTodo',
@@ -54,7 +62,7 @@ export const deleteTodo = createAsyncThunk(
 export const updateTodo = createAsyncThunk(
   'todos/updateTodo',
   async (
-    { id, data }: { id: number; data: { title?: string; isDone?: boolean } },
+    {id, data}: { id: number; data: { title?: string; isDone?: boolean } },
     thunkAPI
   ) => {
     try {
@@ -87,8 +95,6 @@ const todosSlice = createSlice({
       })
       .addCase(deleteTodo.pending, (state) => {
         state.error = null;
-      })
-      .addCase(deleteTodo.fulfilled, (state) => {
       })
       .addCase(deleteTodo.rejected, (state, action) => {
         state.error = action.payload as string;
