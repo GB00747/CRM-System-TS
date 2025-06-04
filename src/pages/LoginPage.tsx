@@ -14,7 +14,7 @@ export default function LoginPage() {
 
   const onFinish = async (values: AuthData) => {
     try {
-      await dispatch(login(values));
+      await dispatch(login(values)).unwrap();
       message.success("Авторизация прошла успешно.");
       navigate("/app/todos");
     } catch (error: any) {
