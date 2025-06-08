@@ -1,6 +1,7 @@
-import {Form, Input, Button, Typography, message} from "antd";
-import {useDispatch, useSelector} from "react-redux";
-import {AppDispatch, RootState} from '@/app/store'
+import {Form, Input, Button, Typography, message,Modal} from "antd";
+import {useState} from "react";
+import {useDispatch} from "react-redux";
+import {AppDispatch} from '@/app/store'
 import {useNavigate} from "react-router-dom";
 import {register} from "@/features/auth/authSlice";
 import AuthLayout from "../layout/AuthLayout";
@@ -18,15 +19,15 @@ interface RegistrationFormData {
 export default function RegistrationPage() {
 
   const dispatch = useDispatch<AppDispatch>();
-  const status = useSelector<RootState>(state => state.auth.status)
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const onFinish = async (values: RegistrationFormData & { confirm?: string }) => {
     try {
-      const { confirm, ...rest } = values;
+      const {confirm, ...rest} = values;
       const dataToSend = {
-        ... rest,
+        ...rest,
         phoneNumber: rest.phoneNumber || ''
       }
 
@@ -34,15 +35,18 @@ export default function RegistrationPage() {
 
       await dispatch(register(dataToSend)).unwrap()
 
-      if (status === 'success') {
+        setIsModalVisible(true);
         message.success("Регистрация прошла успешно. Перейдите на страницу авторизации.");
-      }
-      navigate("/");
+
     } catch (error: any) {
       message.error(error);
     }
   }
 
+  const handleModalOk = () => {
+    setIsModalVisible(false);
+    navigate("/");
+  };
 
   return (
     <AuthLayout title='Регистрация'>
@@ -50,7 +54,11 @@ export default function RegistrationPage() {
         <Form.Item
           label="Имя пользователя"
           name="username"
-          rules={[{required: true, message: "Введите имя"}, {max: 60}]}
+          rules={[
+            {required: true, message: "Введите имя"},
+            {min: 1, max: 60, message: "От 1 до 60 символов"},
+            {pattern: /^[a-zA-Zа-яА-ЯёЁ\s-]+$/, message: "Только буквы русского или латинского алфавита"}
+          ]}
         >
           <Input/>
         </Form.Item>
@@ -61,7 +69,7 @@ export default function RegistrationPage() {
           rules={[
             {required: true, message: "Введите логин"},
             {min: 2, max: 60, message: "От 2 до 60 символов"},
-            {pattern: /^[a-zA-Z0-9]+$/, message: "Только латинские буквы и цифры"},
+            {pattern: /^[a-zA-Z]+$/, message: "Только латинские буквы"},
           ]}
         >
           <Input/>
@@ -82,8 +90,8 @@ export default function RegistrationPage() {
           dependencies={["password"]}
           hasFeedback
           rules={[
-            { required: true, message: "Подтвердите пароль" },
-            ({ getFieldValue }) => ({
+            {required: true, message: "Подтвердите пароль"},
+            ({getFieldValue}) => ({
               validator(_, value) {
                 if (!value || getFieldValue("password") === value) {
                   return Promise.resolve();
@@ -93,7 +101,7 @@ export default function RegistrationPage() {
             }),
           ]}
         >
-          <Input.Password />
+          <Input.Password/>
         </Form.Item>
 
 
@@ -108,8 +116,12 @@ export default function RegistrationPage() {
         <Form.Item
           label="Телефон"
           name="phoneNumber"
+          validateTrigger="onBlur"
           rules={[
-            {pattern: /^\+?[0-9]{10,15}$/, message: "Введите корректный номер телефона"},
+            {
+              pattern: /^\+[0-9]{10,15}$/,
+              message: "Введите корректный номер телефона, начиная с +",
+            },
           ]}
         >
           <Input/>
@@ -125,6 +137,18 @@ export default function RegistrationPage() {
           Уже есть аккаунт? <Link onClick={() => navigate("/")}>Войти</Link>
         </Form.Item>
       </Form>
+
+      <Modal
+        title="Регистрация завершена"
+        open={isModalVisible}
+        onOk={handleModalOk}
+        onCancel={() => setIsModalVisible(false)}
+        okText="Перейти к авторизации"
+        cancelText="Остаться здесь"
+      >
+        <p>Нажмите “Перейти к авторизации”, чтобы войти в систему.</p>
+      </Modal>
+
     </AuthLayout>
   );
 }

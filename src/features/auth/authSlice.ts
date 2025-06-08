@@ -11,13 +11,11 @@ import {
 interface AuthState {
   user: UserResponse | null;
   error: string ;
-  status: "idle" | "success" | "error";
 }
 
 const initialState: AuthState = {
   user: null,
   error: '',
-  status: 'idle',
 };
 
 
@@ -86,13 +84,11 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setAccessToken(state, action: PayloadAction<string>) {
+    setAccessToken(_, action: PayloadAction<string>) {
       localStorage.setItem("accessToken", action.payload);
-      state.status = "success";
     },
     logout(state) {
       state.user = null;
-      state.status = "idle";
       state.error = '';
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
@@ -110,7 +106,6 @@ const authSlice = createSlice({
 
       .addCase(login.fulfilled, (state) => {
         state.error = '';
-        state.status = 'success'
       })
 
 
