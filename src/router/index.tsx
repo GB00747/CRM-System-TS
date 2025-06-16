@@ -28,16 +28,14 @@ export const router = createBrowserRouter([
   },
   {
     path: "/app",
-    element:<PrivateRoute/>,
+    element: (
+      <PrivateRoute>
+        <LayoutWithMenu />
+      </PrivateRoute>
+    ),
     children: [
-      {
-        path: '',
-        element: <LayoutWithMenu />,
-        children: [
-          { path: "todos", element: <TodoListPage /> },
-          { path: "profile", element: <ProfilePage /> },
-        ]
-      }
+      { path: "todos", element: <TodoListPage /> },
+      { path: "profile", element: <ProfilePage /> },
     ],
   },
   {

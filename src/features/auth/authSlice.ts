@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { authApi } from "@/api/authApi";
 import {
   AuthData,
@@ -6,6 +6,8 @@ import {
   UserRegistration,
   Token,
 } from "@/features/auth/authTypes";
+
+
 
 
 interface AuthState {
@@ -83,17 +85,7 @@ export const getProfile = createAsyncThunk<UserResponse, void, { rejectValue: st
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {
-    setAccessToken(_, action: PayloadAction<string>) {
-      localStorage.setItem("accessToken", action.payload);
-    },
-    logout(state) {
-      state.user = null;
-      state.error = '';
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(register.pending, (state) => {
@@ -118,5 +110,5 @@ const authSlice = createSlice({
   },
 });
 
-export const {setAccessToken, logout} = authSlice.actions
+
 export default authSlice.reducer;

@@ -33,13 +33,12 @@ export const fetchTodos = createAsyncThunk<
   'todos/fetchTodos',
   async (
     filter,
-    { rejectWithValue }
+    {rejectWithValue}
   ) => {
     try {
       const data = await todosApi.filteredTasks(filter);
       return data;
     } catch (error: unknown) {
-      // Обязательно return!
       return rejectWithValue("Ошибка при загрузке задач");
     }
   }
@@ -48,13 +47,19 @@ export const fetchTodos = createAsyncThunk<
 
 export const deleteTodo = createAsyncThunk(
   'todos/deleteTodo',
-  async (id: number, thunkAPI) => {
+  async (id: number, {rejectWithValue}) => {
     try {
       await todosApi.deleteTask(id);
 
       return id;
-    } catch (error) {
-      return thunkAPI.rejectWithValue("Ошибка при удалении задачи");
+    } catch (err: any) {
+      if (err.message === "NO_REFRESH_TOKEN") {
+        return rejectWithValue("SESSION_EXPIRED");
+      }
+      if (err.message === "REFRESH_FAILED") {
+        return rejectWithValue("REFRESH_ERROR");
+      }
+      return rejectWithValue("UNKNOWN_ERROR");
     }
   }
 );
@@ -89,6 +94,7 @@ const todosSlice = createSlice({
         state.todos = action.payload.data;
         state.info = action.payload.info;
         state.meta = action.payload.meta;
+        state.error = null;
       })
       .addCase(fetchTodos.rejected, (state, action) => {
         state.error = action.payload as string;

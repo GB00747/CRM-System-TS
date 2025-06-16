@@ -35,10 +35,7 @@ export default function LoginPage() {
             rules={[
               { required: true, message: "Введите логин" },
               { min: 2, max: 60, message: "От 2 до 60 символов" },
-              {
-                pattern: /^[a-zA-Z0-9]+$/,
-                message: "Только латинские буквы и цифры",
-              },
+              {pattern: /^[a-zA-Z]+$/, message: "Только латинские буквы"},
             ]}
           >
             <Input />

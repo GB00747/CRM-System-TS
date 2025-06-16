@@ -8,11 +8,13 @@ import {RootState, AppDispatch} from "../app/store.ts";
 import TodoForm from "../components/TodoForm/TodoForm";
 import TodoTasks from "../components/TodoTasks/TodoTasks";
 import TodoListOfTasks from "../components/TodoListOfTasks/TodoListOfTasks";
+import {useNavigate} from "react-router-dom";
+
 
 
 function TodoListPage() {
 
-
+  const navigate = useNavigate()
   const todos: Task[] = useSelector(
     (state: RootState) => state.todos.todos
   )
@@ -31,14 +33,19 @@ function TodoListPage() {
 
 
   useEffect(() => {
-    fetchTasksByFilter()
+
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) return;
+
+    fetchTasksByFilter();
 
     const interval = setInterval(() => {
-      fetchTasksByFilter()
+      fetchTasksByFilter();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [fetchTasksByFilter]);
+  }, [fetchTasksByFilter, navigate]);
 
   const updateTasks = async () => {
     fetchTasksByFilter()

@@ -1,7 +1,21 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 
-export default function PrivateRoute() {
-  const token = localStorage.getItem("accessToken");
+export default function PrivateRoute({ children }: any) {
+  const [tokenExists, setTokenExists] = useState(!!localStorage.getItem("accessToken"));
 
-  return token ? <Outlet /> : <Navigate to="/" replace />;
+  useEffect(() => {
+    const checkToken = () => {
+      setTokenExists(!!localStorage.getItem("accessToken"));
+    };
+
+    const interval = setInterval(checkToken, 1000); // Проверка каждые 1 сек
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!tokenExists) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
 }
