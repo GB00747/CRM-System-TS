@@ -1,12 +1,25 @@
 import { Layout, Menu } from "antd";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { UnorderedListOutlined, UserOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout } from "@/features/auth/authSlice";
+import { LogoutOutlined } from "@ant-design/icons";
 import "antd/dist/reset.css";
 
 const { Header, Sider, Content } = Layout;
 
 const CustomMenu = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+  };
+
+
   return (
     <Menu
       mode="inline"
@@ -21,6 +34,12 @@ const CustomMenu = () => {
           key: "/app/profile",
           icon: <UserOutlined />,
           label: <Link to="/app/profile">Профиль</Link>,
+        },
+        {
+          key: "logout",
+          icon: <LogoutOutlined />,
+          label: "Выйти",
+          onClick: handleLogout,
         },
       ]}
     />

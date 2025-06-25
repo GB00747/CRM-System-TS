@@ -85,7 +85,14 @@ export const getProfile = createAsyncThunk<UserResponse, void, { rejectValue: st
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    logout(state) {
+      state.user = null;
+      state.error = '';
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(register.pending, (state) => {
@@ -110,5 +117,5 @@ const authSlice = createSlice({
   },
 });
 
-
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;
