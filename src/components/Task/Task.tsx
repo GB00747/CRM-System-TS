@@ -19,7 +19,7 @@ import {
 
 import { Task as TaskType } from "@/features/todos/todoTypes.ts";
 
-import { deleteTodo, updateTodo } from "@/features/todos/TodoSlice.ts";
+import { deleteTodo, updateTodo } from "@/features/todos/todoThunks.ts"
 
 interface Props {
   task: TaskType;
@@ -37,8 +37,9 @@ export default function Task({ task, updateTasks }: Props) {
   const handleClickDeleteTask = async (id: number) => {
     try {
       await dispatch(deleteTodo(id)).unwrap();
-      await updateTasks();
       message.success("Задача удалена");
+      await updateTasks();
+
     } catch (error) {
       console.error("Ошибка при удалении задачи:", error);
       message.error("Не удалось удалить задачу");

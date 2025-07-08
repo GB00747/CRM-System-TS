@@ -3,8 +3,7 @@ import {useState} from "react";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from '@/app/store'
 import {useNavigate} from "react-router-dom";
-import {register} from "@/features/auth/authSlice";
-import AuthLayout from "../layout/AuthLayout";
+import {signUp} from "@/features/auth/authThunks.ts";
 
 const {Link} = Typography;
 
@@ -24,23 +23,17 @@ export default function RegistrationPage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const onFinish = async (values: RegistrationFormData & { confirm?: string }) => {
-    try {
+
       const {confirm, ...rest} = values;
       const dataToSend = {
         ...rest,
         phoneNumber: rest.phoneNumber || ''
       }
 
-      console.log(dataToSend)
-
-      await dispatch(register(dataToSend)).unwrap()
+      await dispatch(signUp(dataToSend))
 
         setIsModalVisible(true);
         message.success("Регистрация прошла успешно. Перейдите на страницу авторизации.");
-
-    } catch (error: any) {
-      message.error(error);
-    }
   }
 
   const handleModalOk = () => {
@@ -49,7 +42,7 @@ export default function RegistrationPage() {
   };
 
   return (
-    <AuthLayout title='Регистрация'>
+    <>
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item
           label="Имя пользователя"
@@ -148,7 +141,6 @@ export default function RegistrationPage() {
       >
         <p>Нажмите “Перейти к авторизации”, чтобы войти в систему.</p>
       </Modal>
-
-    </AuthLayout>
+      </>
   );
 }

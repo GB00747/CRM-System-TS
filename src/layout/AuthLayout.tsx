@@ -1,16 +1,13 @@
-import { ReactNode } from "react";
 import "./auth.css";
+import {Outlet} from "react-router-dom";
 
-interface AuthLayoutProps {
-  children: ReactNode;
-  title?: string;
-}
 
-export default function AuthLayout({ children }: AuthLayoutProps) {
+
+export default function AuthLayout() {
   return (
     <div className="auth-wrapper">
       <div className="auth-box">
-        {children}
+        <Outlet/>
       </div>
     </div>
   );

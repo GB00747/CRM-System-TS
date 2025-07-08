@@ -5,35 +5,37 @@ import {
   UpdateTask,
   FilteredTasksResponse,
   Filter,
-} from "../features/todos/todoTypes.ts";
-
-
+} from "@/features/todos/todoTypes.ts";
 
 
 export const todosApi = {
-  deleteTask: async (id: number): Promise<void> => {
+  async deleteTask(id: number): Promise<void> {
     await axiosInstance.delete(`/todos/${id}`);
+    console.log('Задача удалена успешно')
   },
 
-  filteredTasks: async (
+  async filteredTasks(
     filter: Filter,
-  ): Promise<FilteredTasksResponse> => {
+  ): Promise<FilteredTasksResponse> {
     const response = await axiosInstance.get<FilteredTasksResponse>("/todos", {
-      params: { filter },
-    });
+      params: {filter},
+    })
+    console.log(`Задачи по фильтру ${filter} получены`, response.data)
     return response.data;
   },
 
-  addTask: async (title: string): Promise<Task | undefined> => {
-    const response = await axiosInstance.post<Task>("/todos", { title });
+  async addTask(title: string): Promise<Task> {
+    const response = await axiosInstance.post<Task>("/todos", {title});
+    console.log('Задача добавлена', response.data)
     return response.data;
   },
 
-  updateTask: async (
+  async updateTask(
     id: number,
     data: UpdateTask,
-  ): Promise<Task> => {
+  ): Promise<Task> {
     const response = await axiosInstance.put<Task>(`/todos/${id}`, data);
+    console.log('Задача обновлена', response.data)
     return response.data;
   },
 };

@@ -2,7 +2,7 @@ import {useState, useEffect, useCallback} from "react";
 import {Task, TaskInfo, Filter} from "../features/todos/todoTypes.ts";
 import {useDispatch, useSelector} from "react-redux";
 
-import {fetchTodos} from '../features/todos/TodoSlice.ts'
+import {fetchTodos} from '../features/todos/todoThunks.ts'
 import {RootState, AppDispatch} from "../app/store.ts";
 
 import TodoForm from "../components/TodoForm/TodoForm";

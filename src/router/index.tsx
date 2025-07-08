@@ -5,34 +5,27 @@ import TodoListPage from "../pages/TodoListPage";
 import ProfilePage from "../pages/ProfilePage";
 import NotFoundPage from "../pages/NotFoundPage.tsx";
 import AuthLayout from "../layout/AuthLayout";
-import LayoutWithMenu from "../layout/LayoutWithMenu";
-import PrivateRoute from "@/pages/PrivateRoute.tsx";
+import PrivateLayout from "@/layout/PrivateLayout.tsx";
 
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <AuthLayout title="Вход в систему">
-        <LoginPage />
-      </AuthLayout>
-    ),
-  },
-  {
-    path: "/register",
-    element: (
-      <AuthLayout title="Регистрация">
-        <RegisterPage />
-      </AuthLayout>
-    ),
+    element: <AuthLayout/>,
+    children: [
+      {
+        index: true,
+        element: <LoginPage/>
+      },
+      {
+        path: 'register',
+        element: <RegisterPage />
+      }
+    ]
   },
   {
     path: "/app",
-    element: (
-      <PrivateRoute>
-        <LayoutWithMenu />
-      </PrivateRoute>
-    ),
+    element: <PrivateLayout/>,
     children: [
       { path: "todos", element: <TodoListPage /> },
       { path: "profile", element: <ProfilePage /> },

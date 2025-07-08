@@ -1,6 +1,6 @@
 import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import { login } from "@/features/auth/authSlice.ts";
+import {signIn} from "@/features/auth/authThunks.ts";
 import { AuthData } from "@/features/auth/authTypes";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/store.ts";
@@ -14,17 +14,14 @@ export default function LoginPage() {
 
   const onFinish = async (values: AuthData) => {
     try {
-      await dispatch(login(values)).unwrap();
+      await dispatch(signIn(values)).unwrap();
       message.success("Авторизация прошла успешно.");
       navigate("/app/todos");
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        message.error("Неверные логин или пароль");
-      } else {
-        message.error("Ошибка авторизации. Попробуйте позже.");
+        message.error(error);
       }
     }
-  };
+
 
   return (
       <div>
@@ -38,7 +35,7 @@ export default function LoginPage() {
               {pattern: /^[a-zA-Z]+$/, message: "Только латинские буквы"},
             ]}
           >
-            <Input />
+            <Input autoFocus/>
           </Form.Item>
 
           <Form.Item
@@ -46,7 +43,8 @@ export default function LoginPage() {
             name="password"
             rules={[
               { required: true, message: "Введите пароль" },
-              { min: 6, max: 60 },
+              { min: 6, max: 60 , message: "От 6 до 60 символов"},
+              {pattern: /^[A-Za-z]+$/, message: "Только латинские буквы"},
             ]}
             hasFeedback
           >
@@ -60,7 +58,7 @@ export default function LoginPage() {
           </Form.Item>
 
           <Form.Item className="text-center">
-            Нет аккаунта?{" "}
+            Нет аккаунта?{' '}
             <Link onClick={() => navigate("/register")}>Зарегистрироваться</Link>
           </Form.Item>
         </Form>

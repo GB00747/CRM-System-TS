@@ -1,121 +1,77 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { authApi } from "@/api/authApi";
-import {
-  AuthData,
-  UserResponse,
-  UserRegistration,
-  Token,
-} from "@/features/auth/authTypes";
+import {createSlice} from "@reduxjs/toolkit";
+import {signUp, signIn, getProfile, logOut, initializeAuth} from "@/features/auth/authThunks.ts";
 
-
-
-
-interface AuthState {
-  user: UserResponse | null;
-  error: string ;
+const initialState = {
+  profile: {
+    username: '',
+    email: '',
+    phoneNumber: ''
+  },
+  error: null,
+  tokens: {},
+  isLoading: true,
+  isLogin: false,
 }
-
-const initialState: AuthState = {
-  user: null,
-  error: '',
-};
-
-
-export const register = createAsyncThunk<UserResponse,UserRegistration,{ rejectValue: string } >(
-  "auth/register",
-  async (data, {rejectWithValue}) => {
-    try {
-      return await authApi.register(data);
-
-    } catch (error: any) {
-      if (!error.response) {
-        return rejectWithValue("Сервер недоступен. Попробуйте позже.");
-      }
-      const status = error.response.status;
-
-      switch (status) {
-        case 400:
-          return rejectWithValue("Проверьте корректность заполнения полей.");
-        case 409:
-          return rejectWithValue("Пользователь с таким логином или email уже существует.");
-        case 422:
-          return rejectWithValue("Некорректные данные. Проверьте формат ввода.");
-        case 500:
-          return rejectWithValue("На сервере произошла ошибка. Повторите позже.");
-        default:
-          return rejectWithValue(error.response.data?.message || "Ошибка регистрации.");
-      }
-    }
-  }
-);
-
-
-
-export const login = createAsyncThunk<Token, AuthData, { rejectValue: string } >(
-  "auth/login",
-  async (data, {rejectWithValue}) => {
-    try {
-      const tokens = await authApi.login(data);
-      const {accessToken, refreshToken} = tokens
-
-      localStorage.setItem('accessToken', accessToken)
-      localStorage.setItem('refreshToken', refreshToken)
-
-      return tokens;
-
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Ошибка входа");
-    }
-  }
-);
-
-
-export const getProfile = createAsyncThunk<UserResponse, void, { rejectValue: string }>(
-  "auth/getProfile",
-  async (_, {rejectWithValue}) => {
-    try {
-      return await authApi.getProfile()
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Ошибка получения данных пользователя");
-    }
-  }
-);
 
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
-    logout(state) {
-      state.user = null;
-      state.error = '';
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+    clearAuthError(state) {
+      state.error = null;
     }
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(register.pending, (state) => {
-        state.error = '';
-      })
-      .addCase(register.rejected, (state, action) => {
-        state.error = action.payload ?? "Неизвестная ошибка регистрации.";
-      })
+    builder.addCase(signUp.fulfilled, (state) => {
+      state.error = null
+    })
+    builder.addCase(signUp.rejected, (state,action) => {
+      state.error = action.payload
+    })
+    builder.addCase(signIn.fulfilled, (state,action) => {
+      state.tokens = action.payload
+      state.isLogin = true
+      state.error = null
+    })
+    builder.addCase(signIn.rejected, (state, action) => {
+      state.error = action.payload
+    })
+    builder.addCase(getProfile.pending, (state) => {
+      state.isLoading = true
+    })
+    builder.addCase(getProfile.fulfilled, (state, action) => {
+      state.profile = action.payload
+      state.error = null
+      state.isLoading = false
+      state.isLogin = true
+    })
+    builder.addCase(getProfile.rejected, (state, action) => {
+      state.error = action.payload
+      state.isLoading = false
+    })
+    builder.addCase(logOut.fulfilled, (state) => {
+      state.error = null
+      state.isLogin = false
+      state.profile = { username: '', email: '', phoneNumber: '' }
+    })
+    builder.addCase(initializeAuth.pending, (state) => {
+      state.isLoading = true
+    })
+    builder.addCase(initializeAuth.fulfilled, (state) => {
+      state.isLoading = false
+      state.error = null
+      state.isLogin = true
+    })
+    builder.addCase(initializeAuth.rejected, (state, action) => {
+      state.error = action.payload
+      state.isLoading = false
+      state.isLogin = false
+    })
+  }
+})
 
 
-      .addCase(login.fulfilled, (state) => {
-        state.error = '';
-      })
+export const {clearAuthError} = authSlice.actions
 
-
-      .addCase(getProfile.fulfilled, (state, action) => {
-        state.user = action.payload;
-      })
-      .addCase(getProfile.rejected, (state, action) => {
-        state.error = action.payload ?? 'Неизвестная ошибка при получении профиля'
-      })
-  },
-});
-
-export const { logout } = authSlice.actions;
-export default authSlice.reducer;
+export default authSlice.reducer
