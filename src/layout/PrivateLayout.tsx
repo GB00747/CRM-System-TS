@@ -1,4 +1,4 @@
-import {useEffect, useRef} from "react";
+import {useEffect} from "react";
 import { Layout, Menu } from "antd";
 import { Link, Navigate, useLocation, useNavigate, Outlet } from "react-router-dom";
 import {
@@ -7,7 +7,7 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { logOut, initializeAuth, getRefreshToken } from "@/features/auth/authThunks";
+import { logOut, initializeAuth} from "@/features/auth/authThunks";
 import "antd/dist/reset.css";
 
 const { Header, Sider, Content } = Layout;
@@ -20,7 +20,6 @@ export default function PrivateLayout() {
 
   const {isLoading,isLogin} = useSelector(state => state.auth)
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     dispatch(initializeAuth())
@@ -28,20 +27,7 @@ export default function PrivateLayout() {
 
   console.log({isLoading,isLogin})
 
-  useEffect(() => {
-    if (isLogin && !intervalRef.current) {
-      intervalRef.current = setInterval(() => {
-        dispatch(getRefreshToken());
-      }, 3 * 60 * 1000);
-    }
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [dispatch, isLogin]);
 
 
   if (isLoading) {
@@ -59,6 +45,25 @@ export default function PrivateLayout() {
     navigate("/");
   };
 
+  const menuItems = [
+    {
+      key: "/app/todos",
+      icon: <UnorderedListOutlined />,
+      label: <Link to="/app/todos">Задачи</Link>,
+    },
+    {
+      key: "/app/profile",
+      icon: <UserOutlined />,
+      label: <Link to="/app/profile">Профиль</Link>,
+    },
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "Выйти",
+      onClick: handleLogout,
+    },
+  ]
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider theme="light">
@@ -66,24 +71,7 @@ export default function PrivateLayout() {
         <Menu
           mode="inline"
           selectedKeys={[location.pathname]}
-          items={[
-            {
-              key: "/app/todos",
-              icon: <UnorderedListOutlined />,
-              label: <Link to="/app/todos">Задачи</Link>,
-            },
-            {
-              key: "/app/profile",
-              icon: <UserOutlined />,
-              label: <Link to="/app/profile">Профиль</Link>,
-            },
-            {
-              key: "logout",
-              icon: <LogoutOutlined />,
-              label: "Выйти",
-              onClick: handleLogout,
-            },
-          ]}
+          items={menuItems}
         />
       </Sider>
 

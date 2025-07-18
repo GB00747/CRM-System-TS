@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {Task, TaskInfo} from './todoTypes'
+import {Task, MetaResponse,TaskInfo} from './todoTypes'
 import {
   fetchTodos,
   updateTodo,
@@ -7,18 +7,13 @@ import {
   addTask
 } from "@/features/todos/todoThunks.ts";
 
-export interface TodosState {
-  todos: Task[]
-  info: TaskInfo
-  meta: {
-    totalAmount: number
-  }
-  error: string | null
+export interface TodosState extends MetaResponse<Task, TaskInfo> {
+  error: string | null;
 }
 
 
 const initialState: TodosState = {
-  todos: [],
+  data: [],
   info: {
     all: 0,
     completed: 0,
@@ -43,7 +38,7 @@ const todosSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchTodos.fulfilled, (state, action) => {
-        state.todos = action.payload.data;
+        state.data = action.payload.data;
         state.info = action.payload.info;
         state.meta = action.payload.meta;
         state.error = null;

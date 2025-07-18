@@ -15,7 +15,7 @@ import TodoListOfTasks from "../components/TodoListOfTasks/TodoListOfTasks";
 function TodoListPage() {
 
   const todos: Task[] = useSelector(
-    (state: RootState) => state.todos.todos
+    (state: RootState) => state.todos.data
   )
 
   const taskCounts: TaskInfo = useSelector(

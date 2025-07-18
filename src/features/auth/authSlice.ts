@@ -1,14 +1,26 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {signUp, signIn, getProfile, logOut, initializeAuth} from "@/features/auth/authThunks.ts";
+import {ProfileRequest, Token} from "@/features/auth/authTypes.ts";
 
-const initialState = {
+interface AuthState {
+  profile: ProfileRequest;
+  error: string | null;
+  tokens: Token;
+  isLoading: boolean;
+  isLogin: boolean;
+}
+
+const initialState: AuthState = {
   profile: {
     username: '',
     email: '',
     phoneNumber: ''
   },
   error: null,
-  tokens: {},
+  tokens: {
+    accessToken: '',
+    refreshToken: ''
+  },
   isLoading: true,
   isLogin: false,
 }

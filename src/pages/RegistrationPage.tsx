@@ -4,6 +4,7 @@ import {useDispatch} from "react-redux";
 import {AppDispatch} from '@/app/store'
 import {useNavigate} from "react-router-dom";
 import {signUp} from "@/features/auth/authThunks.ts";
+import {Validation} from "@/constants/validation.ts";
 
 const {Link} = Typography;
 
@@ -48,9 +49,13 @@ export default function RegistrationPage() {
           label="Имя пользователя"
           name="username"
           rules={[
-            {required: true, message: "Введите имя"},
-            {min: 1, max: 60, message: "От 1 до 60 символов"},
-            {pattern: /^[a-zA-Zа-яА-ЯёЁ\s-]+$/, message: "Только буквы русского или латинского алфавита"}
+            { required: true, message: "Введите имя" },
+            {
+              min: Validation.username.min,
+              max: Validation.username.max,
+              message: `От ${Validation.username.min} до ${Validation.username.max} символов`,
+            },
+            { pattern: Validation.username.pattern, message: Validation.username.message },
           ]}
         >
           <Input/>
@@ -60,9 +65,13 @@ export default function RegistrationPage() {
           label="Логин"
           name="login"
           rules={[
-            {required: true, message: "Введите логин"},
-            {min: 2, max: 60, message: "От 2 до 60 символов"},
-            {pattern: /^[a-zA-Z]+$/, message: "Только латинские буквы"},
+            { required: true, message: "Введите логин" },
+            {
+              min: Validation.login.min,
+              max: Validation.login.max,
+              message: `От ${Validation.login.min} до ${Validation.login.max} символов`,
+            },
+            { pattern: Validation.login.pattern, message: Validation.login.message },
           ]}
         >
           <Input/>
@@ -71,7 +80,14 @@ export default function RegistrationPage() {
         <Form.Item
           label="Пароль"
           name="password"
-          rules={[{required: true, message: "Введите пароль"}, {min: 6, max: 60}]}
+          rules={[
+            { required: true, message: "Введите пароль" },
+            {
+              min: Validation.password.min,
+              max: Validation.password.max,
+              message: `От ${Validation.password.min} до ${Validation.password.max} символов`,
+            },
+          ]}
           hasFeedback
         >
           <Input.Password/>
@@ -83,8 +99,8 @@ export default function RegistrationPage() {
           dependencies={["password"]}
           hasFeedback
           rules={[
-            {required: true, message: "Подтвердите пароль"},
-            ({getFieldValue}) => ({
+            { required: true, message: "Подтвердите пароль" },
+            ({ getFieldValue }) => ({
               validator(_, value) {
                 if (!value || getFieldValue("password") === value) {
                   return Promise.resolve();
@@ -101,7 +117,10 @@ export default function RegistrationPage() {
         <Form.Item
           label="Почтовый адрес"
           name="email"
-          rules={[{required: true, message: "Введите email"}, {type: "email"}]}
+          rules={[
+            { required: true, message: "Введите email" },
+            { type: "email" },
+          ]}
         >
           <Input/>
         </Form.Item>
@@ -111,10 +130,7 @@ export default function RegistrationPage() {
           name="phoneNumber"
           validateTrigger="onBlur"
           rules={[
-            {
-              pattern: /^\+[0-9]{10,15}$/,
-              message: "Введите корректный номер телефона, начиная с +",
-            },
+            { pattern: Validation.phone.pattern, message: Validation.phone.message },
           ]}
         >
           <Input/>

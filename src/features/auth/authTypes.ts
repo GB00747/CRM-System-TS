@@ -42,9 +42,6 @@ export interface ProfileRequest {
   phoneNumber: string;
 }
 
-export interface PasswordRequest {
-  password: string;
-}
 
 export interface Token {
   accessToken: string;
