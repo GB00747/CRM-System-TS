@@ -1,6 +1,6 @@
 import { List } from "antd";
 import Task from "../Task/Task";
-import { Task as TaskType } from "../../types/todoTypes.ts";
+import { Task as TaskType } from "../../features/todos/todoTypes.ts";
 
 interface Props {
   tasks: TaskType[];

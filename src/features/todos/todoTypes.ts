@@ -19,9 +19,11 @@ export type TaskInfo = {
   inWork: number;
 };
 
+
+
 export type MetaResponse<T, N> = {
   data: T[];
-  info?: N;
+  info: N;
   meta: {
     totalAmount: number;
   };

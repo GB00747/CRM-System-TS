@@ -1,5 +1,7 @@
-import { addTaskApi } from "../../api/api";
+
 import { Button, Form, Input, message } from "antd";
+import {useDispatch} from "react-redux";
+import {addTask} from "@/features/todos/todoThunks.ts";
 
 type TodoFormProps = {
   updateTasks: () => void;
@@ -7,17 +9,18 @@ type TodoFormProps = {
 
 export default function TodoForm({ updateTasks }: TodoFormProps) {
   const [form] = Form.useForm<{ title: string }>();
+  const dispatch = useDispatch()
 
   const handleButtonAddTask = async (values: { title: string }) => {
     const trimmedValue = values.title.trim();
     if (!trimmedValue) return;
 
     try {
-      const newTask = await addTaskApi(trimmedValue);
+      const newTask = await dispatch(addTask(trimmedValue)).unwrap();
       if (newTask) {
         form.resetFields();
-        updateTasks();
         message.success("Задача добавлена");
+        updateTasks();
       }
     } catch (error) {
       console.error("Ошибка при добавлении задачи:", error);
@@ -27,6 +30,7 @@ export default function TodoForm({ updateTasks }: TodoFormProps) {
 
   return (
     <Form
+      form={form}
       layout="inline"
       onFinish={handleButtonAddTask}
       style={{ display: "flex" }}
