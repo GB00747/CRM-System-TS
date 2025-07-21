@@ -1,4 +1,4 @@
-export const Validation = {
+export const validation = {
   login: {
     min: 2,
     max: 60,

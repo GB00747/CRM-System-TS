@@ -1,5 +1,6 @@
 import axios from "axios";
 import {tokenStorage} from "@/features/auth/services/tokenStorage.ts";
+import {authApi} from "@/api/authApi.ts";
 
 const axiosInstance = axios.create(
   {
@@ -22,11 +23,10 @@ axiosInstance.interceptors.response.use(
       }
 
       try {
-        const refreshResponse = await axios.post(`https://easydev.club/api/v1/auth/refresh`, {refreshToken})
         const {
           accessToken,
           refreshToken: newRefreshToken
-        } = refreshResponse.data
+        } = await authApi.refreshTokens(refreshToken)
 
 
         tokenStorage.setAccessToken(accessToken)
@@ -38,11 +38,11 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         console.error('Ошибка при обновлении токена:', refreshError)
         return Promise.reject(refreshError)
-      }
     }
 
-    return Promise.reject(error)
   }
+    return Promise.reject(error)
+}
 )
 
 export default axiosInstance;

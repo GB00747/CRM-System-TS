@@ -4,7 +4,7 @@ import {useDispatch} from "react-redux";
 import {AppDispatch} from '@/app/store'
 import {useNavigate} from "react-router-dom";
 import {signUp} from "@/features/auth/authThunks.ts";
-import {Validation} from "@/constants/validation.ts";
+import {validation} from "@/constants/validation.ts";
 
 const {Link} = Typography;
 
@@ -51,11 +51,11 @@ export default function RegistrationPage() {
           rules={[
             { required: true, message: "Введите имя" },
             {
-              min: Validation.username.min,
-              max: Validation.username.max,
-              message: `От ${Validation.username.min} до ${Validation.username.max} символов`,
+              min: validation.username.min,
+              max: validation.username.max,
+              message: `От ${validation.username.min} до ${validation.username.max} символов`,
             },
-            { pattern: Validation.username.pattern, message: Validation.username.message },
+            { pattern: validation.username.pattern, message: validation.username.message },
           ]}
         >
           <Input/>
@@ -67,11 +67,11 @@ export default function RegistrationPage() {
           rules={[
             { required: true, message: "Введите логин" },
             {
-              min: Validation.login.min,
-              max: Validation.login.max,
-              message: `От ${Validation.login.min} до ${Validation.login.max} символов`,
+              min: validation.login.min,
+              max: validation.login.max,
+              message: `От ${validation.login.min} до ${validation.login.max} символов`,
             },
-            { pattern: Validation.login.pattern, message: Validation.login.message },
+            { pattern: validation.login.pattern, message: validation.login.message },
           ]}
         >
           <Input/>
@@ -83,9 +83,9 @@ export default function RegistrationPage() {
           rules={[
             { required: true, message: "Введите пароль" },
             {
-              min: Validation.password.min,
-              max: Validation.password.max,
-              message: `От ${Validation.password.min} до ${Validation.password.max} символов`,
+              min: validation.password.min,
+              max: validation.password.max,
+              message: `От ${validation.password.min} до ${validation.password.max} символов`,
             },
           ]}
           hasFeedback
@@ -130,7 +130,7 @@ export default function RegistrationPage() {
           name="phoneNumber"
           validateTrigger="onBlur"
           rules={[
-            { pattern: Validation.phone.pattern, message: Validation.phone.message },
+            { pattern: validation.phone.pattern, message: validation.phone.message },
           ]}
         >
           <Input/>

@@ -1,11 +1,10 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {signUp, signIn, getProfile, logOut, initializeAuth} from "@/features/auth/authThunks.ts";
-import {ProfileRequest, Token} from "@/features/auth/authTypes.ts";
+import {ProfileRequest} from "@/features/auth/authTypes.ts";
 
 interface AuthState {
   profile: ProfileRequest;
   error: string | null;
-  tokens: Token;
   isLoading: boolean;
   isLogin: boolean;
 }
@@ -17,10 +16,6 @@ const initialState: AuthState = {
     phoneNumber: ''
   },
   error: null,
-  tokens: {
-    accessToken: '',
-    refreshToken: ''
-  },
   isLoading: true,
   isLogin: false,
 }
@@ -41,8 +36,7 @@ const authSlice = createSlice({
     builder.addCase(signUp.rejected, (state,action) => {
       state.error = action.payload
     })
-    builder.addCase(signIn.fulfilled, (state,action) => {
-      state.tokens = action.payload
+    builder.addCase(signIn.fulfilled, (state) => {
       state.isLogin = true
       state.error = null
     })
