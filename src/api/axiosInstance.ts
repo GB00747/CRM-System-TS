@@ -26,7 +26,7 @@ axiosInstance.interceptors.response.use(
         const {
           accessToken,
           refreshToken: newRefreshToken
-        } = await authApi.refreshTokens(refreshToken)
+        } = await authApi.refreshTokens({refreshToken})
 
 
         tokenStorage.setAccessToken(accessToken)

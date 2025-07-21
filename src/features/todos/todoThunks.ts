@@ -27,7 +27,6 @@ export const fetchTodos = createAsyncThunk<
         default:
           return rejectWithValue("Произошла неизвестная ошибка при загрузке задач");
       }
-
     }
   }
 );
