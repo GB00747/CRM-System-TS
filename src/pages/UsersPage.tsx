@@ -1,7 +1,7 @@
 import {useDispatch, useSelector} from "react-redux";
 import UsersTable from "@/components/UsersTable/UsersTable.tsx";
 import {AppDispatch, RootState} from "@/app/store.ts";
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {
   blockUserProfile,
   deleteUserProfile,
@@ -9,7 +9,7 @@ import {
   getUsers,
   unblockUserProfile
 } from "@/features/users/usersThunks.ts";
-import {Input, notification, Spin} from "antd";
+import {Input, notification, Spin, Alert} from "antd";
 import {useNavigate} from "react-router-dom";
 import RadioSelect from "@/components/UsersTable/RadioSelect.tsx";
 import {setTableParams} from "@/features/users/userSlice.ts";
@@ -23,13 +23,16 @@ function UsersPage() {
     total
   } = useSelector((state: RootState) => state.user);
 
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const searchInputRef = useRef<any>(null);
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      dispatch(getUsers(tableParams));
+      dispatch(getUsers(tableParams)).finally(() => {
+        setIsFirstLoad(false);
+      });
     }, 500);
 
     return () => clearTimeout(timeoutId);
@@ -38,10 +41,10 @@ function UsersPage() {
 
   useEffect(() => {
     if (!pending && searchInputRef.current) {
-      const input = searchInputRef.current.input; // Ant Design оборачивает Input.Search
+      const input = searchInputRef.current.input;
       const value = input.value;
       input.focus();
-      input.setSelectionRange(value.length, value.length); // курсор в конец строки
+      input.setSelectionRange(value.length, value.length);
     }
   }, [pending]);
 
@@ -87,7 +90,7 @@ function UsersPage() {
 
   };
 
-  if (pending) {
+  if (isFirstLoad) {
     return <Spin
       tip="Загрузка пользователей..."
       size="large"
@@ -95,13 +98,11 @@ function UsersPage() {
     />;
   }
 
-  // if (error) {
-  //   return <Alert message="Ошибка загрузки" description={error} type="error" />;
-  // }
-
+  if (error) {
+    return <Alert message="Ошибка загрузки" description={error} type="error" />;
+  }
 
   return (
-
     <>
       <Input.Search
         ref={searchInputRef}
@@ -110,7 +111,7 @@ function UsersPage() {
         value={tableParams.search || ''}
         onChange={(event) => {
           const search = event.target.value;
-          dispatch(setTableParams({ ...tableParams, search }));
+          dispatch(setTableParams({...tableParams, search}));
         }}
       />
       <RadioSelect

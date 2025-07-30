@@ -127,7 +127,6 @@ const UsersTable: React.FC<UserTableProps> = ({
 
   const dispatch = useDispatch()
 
-
   return (
     <>
       <Table
@@ -137,10 +136,7 @@ const UsersTable: React.FC<UserTableProps> = ({
         onChange={(pagination, filters, sorter) => {
           const currentPage = pagination.current;
           const pageSize = pagination.pageSize ?? 20;
-
-
           const sortField = (sorter as any).field as string | undefined;
-
           const sortOrder =
             (sorter as any).order === 'ascend'
               ? 'asc'

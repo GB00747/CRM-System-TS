@@ -1,4 +1,4 @@
-import {Form, Modal, Select, Button} from 'antd';
+import {Form, Modal, Select, Button, notification} from 'antd';
 import {useDispatch} from "react-redux";
 import {addUserRights} from "@/features/users/usersThunks.ts";
 
@@ -11,12 +11,22 @@ function RoleModal({ handleToggleModalVisible, modalIsVisible, user }) {
         const uniqueArray = [...new Set([...user.roles, ... values.roles])]
         dispatch(addUserRights({id: user.id, roles: uniqueArray}))
         handleToggleModalVisible();
+        notification.success({
+          message: `Успешно изменены роли пользователя ${user.username}` ,
+          description: 'Изменение роли',
+          duration: 2,
+        });
       });
   };
 
   const handleResetRoles = () => {
     form.setFieldsValue({ roles: ['USER'] })
     dispatch(addUserRights({ id: user.id, roles: ['USER'] }))
+    notification.success({
+      message: `Успешно сброшены роли пользователя ${user.username}` ,
+      description: 'Сброс ролей',
+      duration: 2,
+    });
   }
 
   const handleCancel = () => {

@@ -53,7 +53,7 @@ axiosInstance.interceptors.response.use(
 
       const refreshToken = localStorage.getItem('refreshToken');
       if (!refreshToken) {
-        tokenStorage.clear();
+        tokenStorage.clearAccessToken();
 
         return Promise.reject(error);
       }
