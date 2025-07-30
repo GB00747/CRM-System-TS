@@ -9,6 +9,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { logOut, initializeAuth} from "@/features/auth/authThunks";
 import "antd/dist/reset.css";
+import {Roles} from '@/features/auth/authTypes.ts'
+import {clearAuthError} from "@/features/auth/authSlice.ts";
 
 const { Header, Sider, Content } = Layout;
 
@@ -18,19 +20,24 @@ export default function PrivateLayout() {
   const dispatch = useDispatch();
 
 
-  const {isLoading,isLogin} = useSelector(state => state.auth)
+  const {isLoading,isLogin, user} = useSelector(state => state.auth)
 
 
   useEffect(() => {
     dispatch(initializeAuth())
+    const interval = setInterval(() => {
+      dispatch(initializeAuth())
+    }, 1000 * 60 * 2)
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [dispatch]);
 
   console.log({isLoading,isLogin})
 
 
-
-
-  if (isLoading) {
+  /*if (isLoading) {
     return <div>Загрузка...</div>
   }
 
@@ -39,7 +46,8 @@ export default function PrivateLayout() {
       to='/auth'
       replace
     />
-  }
+  }*/
+
   const handleLogout = () => {
     dispatch(logOut());
     navigate("/");
@@ -56,6 +64,13 @@ export default function PrivateLayout() {
       icon: <UserOutlined />,
       label: <Link to="/app/profile">Профиль</Link>,
     },
+    ...(user?.roles?.some(role => role === Roles.ADMIN || role === Roles.MODERATOR)
+      ? [{
+        key: "/app/users",
+        icon: <UserOutlined />,
+        label: <Link to="/app/users">Пользователи</Link>,
+      }]
+      : []),
     {
       key: "logout",
       icon: <LogoutOutlined />,

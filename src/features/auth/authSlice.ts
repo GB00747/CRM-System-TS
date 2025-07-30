@@ -1,23 +1,26 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {signUp, signIn, getProfile, logOut, initializeAuth} from "@/features/auth/authThunks.ts";
-import {ProfileRequest} from "@/features/auth/authTypes.ts";
+import {
+  getProfile,
+  initializeAuth,
+  logOut,
+  signIn,
+  signUp,
+  updateProfile
+} from "@/features/auth/authThunks.ts";
+import {Profile} from "@/features/auth/authTypes.ts";
 
 interface AuthState {
-  profile: ProfileRequest;
   error: string | null;
   isLoading: boolean;
   isLogin: boolean;
+  user: Profile | null
 }
 
 const initialState: AuthState = {
-  profile: {
-    username: '',
-    email: '',
-    phoneNumber: ''
-  },
   error: null,
   isLoading: true,
   isLogin: false,
+  user: null,
 }
 
 
@@ -47,7 +50,7 @@ const authSlice = createSlice({
       state.isLoading = true
     })
     builder.addCase(getProfile.fulfilled, (state, action) => {
-      state.profile = action.payload
+      state.user = action.payload
       state.error = null
       state.isLoading = false
       state.isLogin = true
@@ -56,10 +59,22 @@ const authSlice = createSlice({
       state.error = action.payload
       state.isLoading = false
     })
+    builder.addCase(updateProfile.pending, (state) => {
+      state.isLoading = true
+    })
+    builder.addCase(updateProfile.fulfilled, (state, action) => {
+      state.user = action.payload
+      state.error = null
+      state.isLoading = false
+    })
+    builder.addCase(updateProfile.rejected, (state, action) => {
+      state.error = action.payload
+      state.isLoading = false
+    })
     builder.addCase(logOut.fulfilled, (state) => {
       state.error = null
       state.isLogin = false
-      state.profile = { username: '', email: '', phoneNumber: '' }
+      state.user = null
     })
     builder.addCase(initializeAuth.pending, (state) => {
       state.isLoading = true

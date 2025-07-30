@@ -2,7 +2,7 @@ import {
   AuthData,
   UserResponse,
   UserRegistration,
-  Token
+  Token, Profile, ProfileRequest
 } from "@/features/auth/authTypes";
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {authApi} from "@/api/authApi.ts";
@@ -107,7 +107,7 @@ export const getRefreshToken = createAsyncThunk<Token, void, { rejectValue: stri
   }
 )
 
-export const getProfile = createAsyncThunk<UserResponse, void, {
+export const getProfile = createAsyncThunk<Profile, void, {
   rejectValue: string
 }>(
   "auth/getProfile",
@@ -195,9 +195,25 @@ export const initializeAuth = createAsyncThunk(
 
     try {
       await dispatch(getRefreshToken()).unwrap()
-      await dispatch(getProfile()).unwrap()
+      const user = await dispatch(getProfile()).unwrap()
       console.log('Восстановлены токены при перезагрузке')
-      return true
+      console.log(user)
+      return user
+    } catch (error) {
+      return rejectWithValue(error)
+    }
+  }
+)
+
+export const updateProfile = createAsyncThunk<Profile, ProfileRequest, { rejectValue: string }>(
+  'auth/updateProfile',
+  async (updateUserInfo: ProfileRequest, {rejectWithValue}) => {
+    try {
+      const response = await authApi.updateProfile(updateUserInfo)
+      if (!response) {
+        throw new Error('No data in response');
+      }
+      return response
     } catch (error) {
       return rejectWithValue(error)
     }

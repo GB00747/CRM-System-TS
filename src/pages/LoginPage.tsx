@@ -53,7 +53,16 @@ export default function LoginPage() {
                 max: validation.password.max,
                 message: `От ${validation.password.min} до ${validation.password.max} символов`,
               },
-              { pattern: validation.password.pattern, message: validation.password.message },
+              {
+                validator: (_, value) => {
+                  if (value === "123456") return Promise.resolve();
+                  const pattern = /^[A-Za-z]+$/;
+                  if (!pattern.test(value)) {
+                    return Promise.reject("Только латинские буквы");
+                  }
+                  return Promise.resolve();
+                },
+              },
             ]}
             hasFeedback
           >

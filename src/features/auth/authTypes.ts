@@ -49,3 +49,9 @@ export interface Token {
 }
 
 export type Role = "ADMIN" | "USER" | "MODERATOR";
+
+export enum Roles {
+  ADMIN = "ADMIN",
+  MODERATOR = "MODERATOR",
+  USER = "USER"
+}
