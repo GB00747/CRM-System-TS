@@ -30,7 +30,7 @@ const UsersTable: React.FC<UserTableProps> = ({
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(null)
 
-  const handleToggleModalVisible = (profile) => {
+  const handleToggleModalVisible = (profile?: Profile) => {
     if (profile) {
       setSelectedProfile(profile)
     }

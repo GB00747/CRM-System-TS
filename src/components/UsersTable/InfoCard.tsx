@@ -43,13 +43,31 @@ function InfoCard({
     try {
       const values = await form.validateFields();
 
-      if (userId) {
-        handleUpdateUserProfile(values, userId);
-      } else {
-        handleUpdateUserProfile(values);
+      const changedFields: UserRequest = {};
+
+      if (user) {
+        if (values.username !== user.username) {
+          changedFields.username = values.username;
+        }
+        if (values.email !== user.email) {
+          changedFields.email = values.email;
+        }
+        if (values.phoneNumber !== user.phoneNumber) {
+          changedFields.phoneNumber = values.phoneNumber;
+        }
       }
 
-      setIsEditing(false);
+      if (Object.keys(changedFields).length > 0) {
+        if (userId) {
+          console.log(changedFields)
+          handleUpdateUserProfile(changedFields, userId);
+        } else {
+          handleUpdateUserProfile(changedFields);
+        }
+        setIsEditing(false);
+      } else {
+        setIsEditing(false);
+      }
     } catch (errorInfo) {
       console.log("Validation Failed:", errorInfo);
     }

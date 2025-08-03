@@ -1,59 +1,62 @@
-import {Form, Modal, Select, Button, notification} from 'antd';
+import {Form, Modal, Select, Button, notification, Tag} from 'antd';
 import {useDispatch} from "react-redux";
 import {addUserRights} from "@/features/users/usersThunks.ts";
+import {useEffect} from "react";
+import {Profile} from "@/features/auth/authTypes.ts";
+import {Roles} from "@/features/auth/authTypes.ts";
 
-function RoleModal({ handleToggleModalVisible, modalIsVisible, user }) {
+type RoleModalProps = {
+  handleToggleModalVisible: (profile: Profile | null) => void
+  modalIsVisible: boolean
+  user: Profile | null
+}
+
+function RoleModal({
+                     handleToggleModalVisible,
+                     modalIsVisible,
+                     user
+                   }: RoleModalProps) {
   const [form] = Form.useForm();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (modalIsVisible && user) {
+      form.setFieldsValue({roles: user?.roles || ['USER']});
+    }
+  }, [modalIsVisible, user, form]);
+
   const handleSubmit = () => {
     form.validateFields()
       .then(values => {
-        const uniqueArray = [...new Set([...user.roles, ... values.roles])]
-        dispatch(addUserRights({id: user.id, roles: uniqueArray}))
+        dispatch(addUserRights({id: user.id, roles: values.roles}));
+        notification.success({message: 'Роли обновлены', duration: 2});
         handleToggleModalVisible();
-        notification.success({
-          message: `Успешно изменены роли пользователя ${user.username}` ,
-          description: 'Изменение роли',
-          duration: 2,
-        });
       });
   };
 
-  const handleResetRoles = () => {
-    form.setFieldsValue({ roles: ['USER'] })
-    dispatch(addUserRights({ id: user.id, roles: ['USER'] }))
-    notification.success({
-      message: `Успешно сброшены роли пользователя ${user.username}` ,
-      description: 'Сброс ролей',
-      duration: 2,
-    });
-  }
-
-  const handleCancel = () => {
-    form.resetFields();
-    handleToggleModalVisible();
-  };
-
   const allRoles = [
-    { value: 'ADMIN', label: 'Администратор' },
-    { value: 'MODERATOR', label: 'Модератор' },
-    { value: 'USER', label: 'Пользователь' },
+    {value: Roles.ADMIN, label: 'Админ'},
+    {value: Roles.MODERATOR, label: 'Модератор'},
+    {value: Roles.USER, label: 'Пользователь'},
   ];
-
 
   return (
     <Modal
-      title="Изменить роли пользователя"
+      title="Изменение ролей"
       open={modalIsVisible}
-      onCancel={handleCancel}
+      onCancel={() => handleToggleModalVisible()}
       footer={[
-        <Button key="reset" onClick={handleResetRoles}>
-          Сбросить роли
-        </Button>,
-        <Button key="cancel" onClick={handleCancel}>
+        <Button
+          key="cancel"
+          onClick={() => handleToggleModalVisible()}
+        >
           Отмена
         </Button>,
-        <Button key="submit" type="primary" onClick={handleSubmit}>
+        <Button
+          key="submit"
+          type="primary"
+          onClick={handleSubmit}
+        >
           Сохранить
         </Button>
       ]}
@@ -61,14 +64,25 @@ function RoleModal({ handleToggleModalVisible, modalIsVisible, user }) {
       <Form form={form}>
         <Form.Item
           name="roles"
-          label="Роли"
-          rules={[{ required: true, message: 'Пожалуйста, выберите хотя бы одну роль' }]}
+          rules={
+            [{
+              required: true,
+              message: 'Пожалуйста, выберите хотя бы одну роль.'
+            }]}
         >
           <Select
             mode="multiple"
-            style={{ width: '100%' }}
             placeholder="Выберите роли"
             options={allRoles}
+            style={{width: '100%'}}
+            tagRender={({label, closable, onClose}) => (
+              <Tag
+                closable={closable}
+                onClose={onClose}
+              >
+                {label}
+              </Tag>
+            )}
           />
         </Form.Item>
       </Form>
