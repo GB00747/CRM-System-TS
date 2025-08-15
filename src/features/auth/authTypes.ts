@@ -36,13 +36,6 @@ export interface Profile {
   phoneNumber: string;
 }
 
-export interface ProfileRequest {
-  username: string;
-  email: string;
-  phoneNumber: string;
-}
-
-
 export interface Token {
   accessToken: string;
   refreshToken: string;

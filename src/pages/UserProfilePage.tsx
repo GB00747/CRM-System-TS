@@ -1,11 +1,9 @@
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "@/app/store.ts";
-import {Spin, Typography} from "antd";
+import {Spin} from "antd";
 import {updateUserProfile} from "@/features/users/usersThunks.ts";
 import InfoCard from "@/components/UsersTable/InfoCard.tsx";
 import {UserRequest} from "@/features/users/usersTypes.ts";
-
-const { Title } = Typography;
 
 function UserProfilePage() {
 
@@ -25,9 +23,11 @@ function UserProfilePage() {
     }
   }
 
-  if (pending && !singleUser) {
+
+
+  if (pending) {
     return <Spin
-      tip="Загрузка пользователей..."
+      tip="Загрузка пользователя..."
       size="large"
       fullscreen
     />;

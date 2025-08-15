@@ -1,16 +1,17 @@
-  import {
-    AuthData,
-    UserResponse,
-    UserRegistration,
-    Token, Profile, ProfileRequest
-  } from "@/features/auth/authTypes";
-  import {createAsyncThunk} from "@reduxjs/toolkit";
-  import {authApi} from "@/api/authApi.ts";
-  import {tokenStorage} from "@/features/auth/services/tokenStorage.ts";
+import {
+  AuthData,
+  Profile,
+  Token,
+  UserRegistration,
+  UserResponse
+} from "@/features/auth/authTypes";
+import {createAsyncThunk} from "@reduxjs/toolkit";
+import {authApi} from "@/api/authApi.ts";
+import {tokenStorage} from "@/features/auth/services/tokenStorage.ts";
+import {UserRequest} from "@/features/users/usersTypes.ts";
 
 
-
-  export const signUp = createAsyncThunk<UserResponse, UserRegistration, {
+export const signUp = createAsyncThunk<UserResponse, UserRegistration, {
     rejectValue: string
   }>(
     "auth/signUp",
@@ -176,9 +177,9 @@
     }
   )
 
-  export const updateProfile = createAsyncThunk<Profile, ProfileRequest, { rejectValue: string }>(
+  export const updateProfile = createAsyncThunk<Profile, UserRequest, { rejectValue: string }>(
     'auth/updateProfile',
-    async (updateUserInfo: ProfileRequest, {rejectWithValue}) => {
+    async (updateUserInfo: UserRequest, {rejectWithValue}) => {
       try {
         const response = await authApi.updateProfile(updateUserInfo)
         if (!response) {

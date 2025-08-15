@@ -25,13 +25,33 @@ function RoleModal({
     }
   }, [modalIsVisible, user, form]);
 
-  const handleSubmit = () => {
-    form.validateFields()
-      .then(values => {
-        dispatch(addUserRights({id: user.id, roles: values.roles}));
-        notification.success({message: 'Роли обновлены', duration: 2});
-        handleToggleModalVisible();
-      });
+  const rolesAreEqual = (a: Roles[] = [], b: Roles[] = []): boolean => {
+    if (a.length !== b.length) return false;
+    const bSet = new Set(b);
+    for (const role of a) {
+      if (!bSet.has(role)) return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = (values: { roles: Roles[] }) => {
+
+    if (!user) {
+      return
+    }
+
+    if (rolesAreEqual(values.roles, user.roles)) {
+      notification.info({
+        message: 'Вы выбрали те же роли',
+        description: 'Изменений не обнаружено',
+        duration: 2,
+      })
+      return
+    }
+
+    dispatch(addUserRights({id: user.id, roles: values.roles}));
+    notification.success({message: 'Роли обновлены', duration: 2});
+    handleToggleModalVisible();
   };
 
   const allRoles = [
@@ -45,23 +65,12 @@ function RoleModal({
       title="Изменение ролей"
       open={modalIsVisible}
       onCancel={() => handleToggleModalVisible()}
-      footer={[
-        <Button
-          key="cancel"
-          onClick={() => handleToggleModalVisible()}
-        >
-          Отмена
-        </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          onClick={handleSubmit}
-        >
-          Сохранить
-        </Button>
-      ]}
+      footer={null}
     >
-      <Form form={form}>
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+      >
         <Form.Item
           name="roles"
           rules={
@@ -85,6 +94,28 @@ function RoleModal({
             )}
           />
         </Form.Item>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: '8px',
+            marginTop: '16px'
+          }}
+        >
+          <Button
+            key="cancel"
+            onClick={() => handleToggleModalVisible()}
+          >
+            Отмена
+          </Button>
+          <Button
+            key="submit"
+            type="primary"
+            htmlType='submit'
+          >
+            Сохранить
+          </Button>
+        </div>
       </Form>
     </Modal>
   );

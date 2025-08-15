@@ -1,7 +1,7 @@
 import {useDispatch, useSelector} from "react-redux";
 import UsersTable from "@/components/UsersTable/UsersTable.tsx";
 import {AppDispatch, RootState} from "@/app/store.ts";
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
   blockUserProfile,
   deleteUserProfile,
@@ -9,7 +9,8 @@ import {
   getUsers,
   unblockUserProfile
 } from "@/features/users/usersThunks.ts";
-import {Input, notification, Spin, Alert} from "antd";
+
+import {Alert, Input, notification, Spin} from "antd";
 import {useNavigate} from "react-router-dom";
 import RadioSelect from "@/components/UsersTable/RadioSelect.tsx";
 import {setTableParams} from "@/features/users/userSlice.ts";
@@ -17,14 +18,12 @@ import {setTableParams} from "@/features/users/userSlice.ts";
 function UsersPage() {
   const {
     users,
-    pending,
     error,
     tableParams,
     total
   } = useSelector((state: RootState) => state.user);
 
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
-  const searchInputRef = useRef<any>(null);
+  const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
 
@@ -37,16 +36,6 @@ function UsersPage() {
 
     return () => clearTimeout(timeoutId);
   }, [dispatch, tableParams]);
-
-
-  useEffect(() => {
-    if (!pending && searchInputRef.current) {
-      const input = searchInputRef.current.input;
-      const value = input.value;
-      input.focus();
-      input.setSelectionRange(value.length, value.length);
-    }
-  }, [pending]);
 
 
   const handleGetProfile = (id: number) => {
@@ -88,7 +77,12 @@ function UsersPage() {
       console.error(error)
     }
 
-  };
+  }
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const search = event.target.value;
+    dispatch(setTableParams({...tableParams, search}));
+  }
 
   if (isFirstLoad) {
     return <Spin
@@ -99,20 +93,20 @@ function UsersPage() {
   }
 
   if (error) {
-    return <Alert message="Ошибка загрузки" description={error} type="error" />;
+    return <Alert
+      message="Ошибка загрузки"
+      description={error}
+      type="error"
+    />;
   }
 
   return (
     <>
       <Input.Search
-        ref={searchInputRef}
         placeholder="Поиск по имени или email"
         allowClear
         value={tableParams.search || ''}
-        onChange={(event) => {
-          const search = event.target.value;
-          dispatch(setTableParams({...tableParams, search}));
-        }}
+        onChange={handleSearchChange}
       />
       <RadioSelect
         tableParams={tableParams}

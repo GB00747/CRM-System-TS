@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {Profile} from "@/features/auth/authTypes.ts";
 import type {ColumnsType} from 'antd/es/table';
-import {Button, Popconfirm, Space, Table, Tag} from 'antd';
+import {Button, Popconfirm, Space, Table, Tag, TableProps} from 'antd';
 import {setTableParams} from '@/features/users/userSlice';
 import {useDispatch} from "react-redux";
 import {UserFilters} from "@/features/users/usersTypes.ts";
@@ -27,8 +27,8 @@ const UsersTable: React.FC<UserTableProps> = ({
                                               }) => {
 
 
-  const [modalIsVisible, setModalIsVisible] = useState(false);
-  const [selectedProfile, setSelectedProfile] = useState(null)
+  const [modalIsVisible, setModalIsVisible] = useState<boolean>(false);
+  const [selectedProfile, setSelectedProfile] = useState<null | Profile>(null)
 
   const handleToggleModalVisible = (profile?: Profile) => {
     if (profile) {
@@ -127,34 +127,34 @@ const UsersTable: React.FC<UserTableProps> = ({
 
   const dispatch = useDispatch()
 
+  const handleTableChange: TableProps<Profile>['onChange'] = (pagination, _, sorter) => {
+    const currentPage = pagination.current;
+    const pageSize = pagination.pageSize ?? 20;
+    const sortField = (sorter as any).field as string | undefined;
+    const sortOrder =
+      (sorter as any).order === 'ascend'
+        ? 'asc'
+        : (sorter as any).order === 'descend'
+          ? 'desc'
+          : undefined;
+
+    dispatch(setTableParams({
+      pageSize,
+      currentPage,
+      offset: (currentPage ?? 1) - 1,
+      limit: pageSize,
+      sortBy: sortField,
+      sortOrder,
+    }));
+  };
+
   return (
     <>
       <Table
         rowKey="id"
         columns={columns}
         dataSource={users ?? []}
-        onChange={(pagination, filters, sorter) => {
-          const currentPage = pagination.current;
-          const pageSize = pagination.pageSize ?? 20;
-          const sortField = (sorter as any).field as string | undefined;
-          const sortOrder =
-            (sorter as any).order === 'ascend'
-              ? 'asc'
-              : (sorter as any).order === 'descend'
-                ? 'desc'
-                : undefined;
-
-          console.log(sortField, sortOrder)
-
-          dispatch(setTableParams({
-            pageSize,
-            currentPage,
-            offset: currentPage - 1,
-            limit: pageSize,
-            sortBy: sortField,
-            sortOrder,
-          }));
-        }}
+        onChange={handleTableChange}
         pagination={{
           current: tableParams.currentPage || 1,
           pageSize: tableParams.pageSize || 20,

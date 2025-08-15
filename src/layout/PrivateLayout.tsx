@@ -1,18 +1,17 @@
 import {useEffect} from "react";
-import { Layout, Menu } from "antd";
-import { Link, Navigate, useLocation, useNavigate, Outlet } from "react-router-dom";
+import {Layout, Menu} from "antd";
+import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
 import {
+  LogoutOutlined,
   UnorderedListOutlined,
   UserOutlined,
-  LogoutOutlined,
 } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
-import { logOut, initializeAuth} from "@/features/auth/authThunks";
+import {useDispatch, useSelector} from "react-redux";
+import {initializeAuth, logOut} from "@/features/auth/authThunks";
 import "antd/dist/reset.css";
 import {Roles} from '@/features/auth/authTypes.ts'
-import {clearAuthError} from "@/features/auth/authSlice.ts";
 
-const { Header, Sider, Content } = Layout;
+const {Header, Sider, Content} = Layout;
 
 export default function PrivateLayout() {
   const location = useLocation();
@@ -20,7 +19,7 @@ export default function PrivateLayout() {
   const dispatch = useDispatch();
 
 
-  const {isLoading,isLogin, user} = useSelector(state => state.auth)
+  const {isLoading, isLogin, user} = useSelector(state => state.auth)
 
 
   useEffect(() => {
@@ -34,7 +33,7 @@ export default function PrivateLayout() {
     }
   }, [dispatch]);
 
-  console.log({isLoading,isLogin})
+  console.log({isLoading, isLogin})
 
 
   /*if (isLoading) {
@@ -80,9 +79,9 @@ export default function PrivateLayout() {
   ]
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <Layout style={{minHeight: "100vh"}}>
       <Sider theme="light">
-        <div style={{ padding: "16px", fontWeight: "bold" }}>Меню</div>
+        <div style={{padding: "16px", fontWeight: "bold"}}>Меню</div>
         <Menu
           mode="inline"
           selectedKeys={[location.pathname]}
@@ -98,10 +97,10 @@ export default function PrivateLayout() {
             justifyContent: "center",
           }}
         >
-          <h1 style={{ margin: 0 }}>ToDo App</h1>
+          <h1 style={{margin: 0}}>ToDo App</h1>
         </Header>
 
-        <Content style={{ padding: "1rem", backgroundColor: "#fff" }}>
+        <Content style={{padding: "1rem", backgroundColor: "#fff"}}>
           <Outlet />
         </Content>
       </Layout>

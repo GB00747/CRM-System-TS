@@ -1,12 +1,11 @@
-import {Alert, Avatar, Card, Col, Row, Button} from "antd";
+import {Alert, Avatar, Card, Col, Row, Typography} from "antd";
 import {UserOutlined} from "@ant-design/icons";
-import {Typography} from 'antd';
 import {useState} from "react";
-import {useNavigate} from "react-router-dom";
 import {useForm} from "antd/es/form/Form";
 import UserInfoContent from "@/components/UsersTable/UserInfoContent.tsx";
 import {Profile} from "@/features/auth/authTypes.ts";
 import {UserRequest} from "@/features/users/usersTypes.ts";
+import {useNavigate} from "react-router-dom";
 
 const {Title} = Typography
 
@@ -23,12 +22,15 @@ function InfoCard({
                     handleUpdateUserProfile,
                     userId
                   }: InfoCardProps) {
-
-  const [isEditing, setIsEditing] = useState(false)
-  const navigate = useNavigate()
+  const [isEditing, setIsEditing] = useState<boolean>(false)
   const [form] = useForm()
+  const navigate = useNavigate();
 
-  const hadleSwitchEditing = () => {
+  const handleBack = () => {
+    navigate(-1)
+  }
+
+  const handleSwitchEditing = () => {
     if (user) {
       form.setFieldsValue({
         username: user.username,
@@ -39,38 +41,38 @@ function InfoCard({
     setIsEditing(prevState => !prevState)
   }
 
-  const onSave = async () => {
-    try {
-      const values = await form.validateFields();
+  const getChangedFields = <T extends object>(original: T, updated: T): Partial<T> => {
+    return Object.keys(updated).reduce((acc, key) => {
+      const k = key as keyof T;
+      const origValue = original[k];
+      const updatedValue = updated[k];
 
-      const changedFields: UserRequest = {};
+      const isArray = Array.isArray(origValue) && Array.isArray(updatedValue);
+      const isEqual = isArray
+        ? JSON.stringify(origValue) === JSON.stringify(updatedValue)
+        : origValue === updatedValue;
 
-      if (user) {
-        if (values.username !== user.username) {
-          changedFields.username = values.username;
-        }
-        if (values.email !== user.email) {
-          changedFields.email = values.email;
-        }
-        if (values.phoneNumber !== user.phoneNumber) {
-          changedFields.phoneNumber = values.phoneNumber;
-        }
+      if (!isEqual) {
+        acc[k] = updatedValue;
       }
+      return acc;
+    }, {} as Partial<T>);
+  }
 
-      if (Object.keys(changedFields).length > 0) {
-        if (userId) {
-          console.log(changedFields)
-          handleUpdateUserProfile(changedFields, userId);
-        } else {
-          handleUpdateUserProfile(changedFields);
-        }
-        setIsEditing(false);
-      } else {
-        setIsEditing(false);
-      }
-    } catch (errorInfo) {
-      console.log("Validation Failed:", errorInfo);
+  const onSave = (values: UserRequest) => {
+    if (!user) {
+      return
     }
+    const changedFields = getChangedFields(user, values);
+
+    if (Object.keys(changedFields).length > 0) {
+      if (userId) {
+        handleUpdateUserProfile(changedFields, userId);
+      } else {
+        handleUpdateUserProfile(changedFields);
+      }
+    }
+    setIsEditing(false);
   };
 
   const cardTitle = (
@@ -97,50 +99,10 @@ function InfoCard({
     </Row>
   )
 
-  const defaultActions = [
-    <div
-      key="actions"
-      style={{display: 'flex', gap: 8, justifyContent: 'left', marginLeft: '1rem'}}
-    >
-      <Button
-        type="primary"
-        onClick={hadleSwitchEditing}
-        key="edit"
-      >Редактировать</Button>
-      <Button
-        onClick={() => navigate(-1)}
-        key="back"
-      >Вернуться</Button>
-    </div>
-  ]
-
-  const editActions = [
-    <div
-      key="actions"
-      style={{display: 'flex', gap: 8, justifyContent: 'left'}}
-    >
-      <Button
-        type="primary"
-        onClick={onSave}
-        key="save"
-      >
-        Сохранить
-      </Button>
-      <Button
-        key="cancel"
-        onClick={hadleSwitchEditing}
-      >
-        Отменить
-      </Button>
-    </div>
-  ];
-
-
   return (
     <Card
       style={{borderRadius: 10}}
       title={cardTitle}
-      actions={isEditing ? editActions : defaultActions}
     >
       {error && (
         <Alert
@@ -155,9 +117,11 @@ function InfoCard({
         user={user}
         form={form}
         isEditing={isEditing}
+        onSave={onSave}
+        handleSwitchEditing={handleSwitchEditing}
+        handleBack={handleBack}
       />
     </Card>
-
   );
 }
 

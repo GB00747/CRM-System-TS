@@ -4,7 +4,7 @@ import {setTableParams} from "@/features/users/userSlice.ts";
 const {Option} = Select;
 
 
-function RadioSelect({ tableParams}) {
+const RadioSelect = ({ tableParams}) => {
   const dispatch = useDispatch()
   const handleChange = (value: string) => {
     if (value === "all") {
