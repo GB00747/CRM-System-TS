@@ -3,7 +3,7 @@ import {
   UserRegistration,
   AuthData,
   RefreshToken,
-  Token, UserResponse,
+  Token, UserResponse, Profile, ProfileRequest
 } from "@/features/auth/authTypes";
 
 import {AxiosRequestConfig} from 'axios'
@@ -39,9 +39,21 @@ export const authApi = {
 
   },
 
-  async getProfile(config: AxiosRequestConfig): Promise<UserResponse> {
+  async getProfile(config: AxiosRequestConfig): Promise<Profile> {
     try {
-      const response = await axiosInstance.get("/user/profile", config);
+      const response = await axiosInstance.get("/user/profile");
+      console.log(response.data)
+      return response.data;
+    } catch (error) {
+      throw error
+    }
+
+  },
+
+  async updateProfile(updateUserInfo: ProfileRequest): Promise<Profile> {
+    try {
+      const response = await axiosInstance.put("/user/profile", updateUserInfo);
+      console.log(response.data)
       return response.data;
     } catch (error) {
       throw error

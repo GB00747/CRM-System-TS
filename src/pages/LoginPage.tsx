@@ -52,8 +52,7 @@ export default function LoginPage() {
                 min: validation.password.min,
                 max: validation.password.max,
                 message: `От ${validation.password.min} до ${validation.password.max} символов`,
-              },
-              { pattern: validation.password.pattern, message: validation.password.message },
+              }
             ]}
             hasFeedback
           >

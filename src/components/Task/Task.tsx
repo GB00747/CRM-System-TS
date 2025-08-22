@@ -69,6 +69,7 @@ export default function Task({ task, updateTasks }: Props) {
   const handleClickCancelEdit = () => {
     form.setFieldsValue({ title: task.title });
     setTaskValue(task.title);
+
     handleClickEndEdit();
   };
 

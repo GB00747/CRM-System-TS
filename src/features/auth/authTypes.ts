@@ -36,16 +36,15 @@ export interface Profile {
   phoneNumber: string;
 }
 
-export interface ProfileRequest {
-  username: string;
-  email: string;
-  phoneNumber: string;
-}
-
-
 export interface Token {
   accessToken: string;
   refreshToken: string;
 }
 
 export type Role = "ADMIN" | "USER" | "MODERATOR";
+
+export enum Roles {
+  ADMIN = "ADMIN",
+  MODERATOR = "MODERATOR",
+  USER = "USER"
+}
